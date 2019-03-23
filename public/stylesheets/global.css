@@ -1,0 +1,29 @@
+*{color: #fff;}
+
+html{
+    background: url(" ../images/background.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+form{
+
+    width:320px;
+    background-color: #343a40c4;
+    padding: 5%;
+    margin: auto;
+    -webkit-box-shadow: -2px -5px 134px 1px rgba(0,0,0,0.91);
+    -moz-box-shadow: -2px -5px 134px 1px rgba(0,0,0,0.91);
+    box-shadow: -2px -5px 134px 1px rgba(0,0,0,0.91);
+}
+
+.bg{
+    margin-top: 15%;
+    height: 0px;
+    width: auto;
+
+}
+
+
