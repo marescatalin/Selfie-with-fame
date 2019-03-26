@@ -1,0 +1,75 @@
+.card-header[data-toggle="collapse"]:after {
+    font-family: FontAwesome;
+    content: "\f053";
+    /* "play" icon */
+    float: right;
+    color: #b0c5d8;
+    font-size: 18px;
+    line-height: 22px;
+}
+
+.card-header[aria-expanded="true"]:after {
+    /* rotate "play" icon from > (right arrow) to ^ (up arrow) */
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+
+.image-list-item {
+    position: absolute;
+}
+
+.image-list-item > .picture-remove {
+    position: absolute;
+    opacity: 0.9;
+    top: 17%;
+    right: 29%;
+    font-size: 8em;
+    display: none;
+}
+
+.image-list-item:hover > .picture-remove {
+    display: block;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+    .image-list-item > .picture-remove {
+        top: 30%;
+        right: 25%;
+        font-size: 15em;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .image-list-item > .picture-remove {
+        top: 15%;
+        right: 25%;
+        font-size: 20em;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .image-list-item {
+        display: flex !important;
+        justify-content: center;
+    }
+
+    .image-list-item > .picture-remove {
+        display: block;
+        top: 10px;
+        right: 8px;
+        font-size: 8em;
+    }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .image-list-item > .picture-remove {
+        right: 25px;
+    }
+}
