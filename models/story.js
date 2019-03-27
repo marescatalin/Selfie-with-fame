@@ -1,13 +1,13 @@
 "use strict";
 
 class Story {
-    constructor(title, message, date, pictures, event) {
+    constructor(title, message, date, pictures, myEvent, author) {
         this.title = title;
         this.message = message;
         this.date = date;
         this.pictures = pictures;
-        this.event = event;
-        this.comments = [];
+        this.myEvent = myEvent;
+        this.author = author
     }
 
     set name(name) {

@@ -5,8 +5,10 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var indexRouter = require('./routes/index');
-var storiesRouter = require('./routes/stories')
+var storiesRouter = require('./routes/stories');
 var usersRouter = require('./routes/users');
+var myEventRouter = require('./routes/myevents');
+
 
 var app = express();
 
@@ -23,6 +25,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 app.use('/', indexRouter);
 app.use('/story', storiesRouter);
+app.use('/myevent', myEventRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

@@ -1,4 +1,3 @@
-
 'use strict';
 
 var video, canvas;
@@ -52,6 +51,7 @@ function createPictureHTML(pictureData) {
 }
 
 function addPictureToPost() {
+    console.log("Clicked");
     var picture = canvas.toDataURL('image/png');
     var picturesDiv = $('#collapsePictures');
     picturesDiv.children('.list-group').append(createPictureHTML(picture))
@@ -89,7 +89,7 @@ function setupPictureCamera() {
             snapshotButton.show();
             video.style.display = "inline";
         });
-        savePictureButton.click(e => addPictureToPost());
+        savePictureButton.off('click').click(addPictureToPost);
 
         navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
     }
@@ -114,6 +114,7 @@ function sendAjaxRequest(url, data) {
         },
         fail: function (e) {
             console.log("Failed");
+            console.log("Storing data in IndexedDB...");
         }
     });
 }
@@ -129,6 +130,14 @@ function submitPost() {
 }
 
 $(document).ready(function () {
+    //check for support
+    if ('indexedDB' in window) {
+        initDatabase();
+    }
+    else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
+
     video = document.querySelector('video');
     canvas = window.canvas = document.querySelector('canvas');
 
