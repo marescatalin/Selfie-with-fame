@@ -36,12 +36,14 @@ const STORES = [STORY_STORE_NAME, MYEVENT_STORE_NAME];
  */
 function initDatabase(){
     dbPromise = idb.openDb(SELFIE_DB_NAME, 1, function (upgradeDb) {
-        for(let store in STORES) {
+        console.log(upgradeDb.objectStoreNames);
+        STORES.forEach(function (store) {
             if (!upgradeDb.objectStoreNames.contains(store)) {
                 initStores(upgradeDb, store);
             }
-        }
+        });
     });
+    console.log(dbPromise)
 }
 
 function initStores(upgradeDb, store) {
@@ -57,19 +59,18 @@ function initStores(upgradeDb, store) {
 
 // title, message, date, pictures, myEvent, author
 function initStoryStore(upgradeDb) {
-    var storyDB = upgradeDb.createObjectStore(STORY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+    let storyDB = upgradeDb.createObjectStore(STORY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
     storyDB.createIndex('myevent', 'myevent', {unique: false});
     storyDB.createIndex('author', 'author', {unique: false});
     storyDB.createIndex('title', 'title', {unique: false});
     storyDB.createIndex('message', 'message', {unique: false});
     storyDB.createIndex('date', 'date', {unique: false});
-    storyDB.createIndex('author', 'author', {unique: false});
     storyDB.createIndex('pictures', 'pictures', {unique: false});
 }
 
 // myEventName, description, location, startDate, endDate, pictures, keywords, author
 function initMyEventStore(upgradeDb) {
-    var storyDB = upgradeDb.createObjectStore(STORY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+    let storyDB = upgradeDb.createObjectStore(MYEVENT_STORE_NAME, {keyPath: 'id', autoIncrement: true});
     storyDB.createIndex('myEventName', 'myEventName', {unique: false});
     storyDB.createIndex('description', 'description', {unique: false});
     storyDB.createIndex('location', 'location', {unique: false});
