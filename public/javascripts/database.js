@@ -80,3 +80,25 @@ function initMyEventStore(upgradeDb) {
     storyDB.createIndex('keywords', 'keywords', {unique: false, multiEntry: true});
     storyDB.createIndex('author', 'author', {unique: false});
 }
+
+function cacheNewMyEvent(myEvent, resolve, reject) {
+    console.log('inserting: '+JSON.stringify(myEvent));
+    if (dbPromise) {
+        dbPromise.then(async db => {
+            var tx = db.transaction(MYEVENT_STORE_NAME, 'readwrite');
+            var store = tx.objectStore(MYEVENT_STORE_NAME);
+            await store.put(myEvent);
+            return tx.complete;
+        }).then(function () {
+            console.log('added item to the store! '+ JSON.stringify(myEvent));
+            if(resolve) {
+                resolve();
+            }
+        }).catch(function (error) {
+            localStorage.setItem(myEvent.name, error);
+            if(reject) {
+                reject();
+            }
+        });
+    }
+}

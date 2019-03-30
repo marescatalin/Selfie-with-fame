@@ -8,6 +8,7 @@ router.get('/new', function (req, res) {
 });
 
 router.post('/new', function (req, res) {
+    myEventController.new(req, res);
     res.redirect('/');
 });
 

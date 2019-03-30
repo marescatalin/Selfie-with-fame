@@ -18,9 +18,9 @@ function readUploadedFileAsData(inputFile) {
 
 function createPictureHTML(pictureData) {
     return "<li class=\"image-list-item list-group-item\">\n" +
-                "<img src=\""+ pictureData + "\" class=\"img-fluid\">\n" +
-                "<span class=\"picture-remove far fa-times-circle\"></span>\n" +
-            "</li>"
+        "<img src=\"" + pictureData + "\" class=\"img-fluid\">\n" +
+        "<span class=\"picture-remove far fa-times-circle\"></span>\n" +
+        "</li>"
 }
 
 function addPictureToEvent(pictureData) {
@@ -29,9 +29,9 @@ function addPictureToEvent(pictureData) {
 }
 
 function toJSON(serializedArray) {
-    var data={};
-    for (var index in serializedArray){
-        data[serializedArray[index].name]= serializedArray[index].value;
+    var data = {};
+    for (var index in serializedArray) {
+        data[serializedArray[index].name] = serializedArray[index].value;
     }
     return data;
 }
@@ -40,8 +40,7 @@ $(document).ready(function () {
     //check for support
     if ('indexedDB' in window) {
         initDatabase();
-    }
-    else {
+    } else {
         console.log('This browser doesn\'t support IndexedDB');
     }
 
@@ -56,14 +55,15 @@ $(document).ready(function () {
     });
 
     $('#myevent-submit').click(function () {
-        let formData = $('#post-form').serializeArray();
+        let form = $('#post-form');
+        let formData = form.serializeArray();
         let pictures = [];
         $(".image-list-item").children("img").each(function () {
             pictures.push(this.src);
         });
-        formData.push({name:'pictures', value:pictures});
+        formData.push({name: 'pictures', value: pictures});
+        formData.push({name: 'author', value: localStorage.getItem('currentUser')});
         let jsonData = toJSON(formData);
-        console.log(jsonData)
-        //$('#post-form').submit();
-    })
+        cacheNewMyEvent(jsonData, function () {form.submit()});
+    });
 });
