@@ -122,6 +122,21 @@ function storeCachedData(user, resolve) {
     }
 }
 
+function getLoginData(user) {
+    if (dbPromise) {
+        dbPromise.then(function (db) {
+            console.log('fetching user from database');
+            var tx = db.transaction(USER_STORE_NAME, 'readonly');
+            var store = tx.objectStore(USER_STORE_NAME);
+            var index = store.index('username');
+            return index.get(IDBKeyRange.only(user.username));
+        }).then(function (foundObject) {
+            return (foundObject && (foundObject.username==user.username &&
+                foundObject.password===user.password));
+        });
+    }
+}
+
 
 function cacheNewMyEvent(myEvent, resolve, reject) {
     console.log('inserting: ' + JSON.stringify(myEvent));

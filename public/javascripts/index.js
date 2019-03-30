@@ -1,9 +1,4 @@
 
-function checkForErrors(isLoginCorrect) {
-    if (!isLoginCorrect) {
-        alert('login or password is incorrect');
-    }
-}
 
 function showPassword(){
     var x = document.getElementById("password");
@@ -33,6 +28,18 @@ $(document).ready(function () {
 
     $('#signup-get').click(function () {
         $('#signup-form').submit();
+    });
+
+    $('#login').click(function () {
+        let form = $(this).parents('form');
+        let formData = form.serializeArray();
+        let user = toJSON(formData);
+        if ( getLoginData(user)) {
+            localStorage.setItem("currentUser", user.username);
+            $('#signin-form').submit();
+        }else{
+            alert('username or password is incorrect')
+        }
     });
 
     $('#signup-button').click(function () {
