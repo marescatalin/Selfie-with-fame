@@ -93,6 +93,7 @@ function initMyEventStore(upgradeDb) {
     storyDB.createIndex('author', 'author', {unique: false});
 }
 
+<<<<<<< HEAD
 function initUserEventStore(upgradeDb){
     let storyDB = upgradeDb.createObjectStore(USER_STORE_NAME, {keyPath: 'id', autoIncrement: true});
     storyDB.createIndex('username', 'username', {unique: true});
@@ -113,6 +114,28 @@ function storeCachedData(user) {
             console.log('added item to the store! '+ JSON.stringify(USER_STORE_NAME));
         }).catch(function (error) {
             localStorage.setItem(JSON.stringify(USER_STORE_NAME) ,JSON.stringify(USER_STORE_NAME));
+        });
+    }
+}
+
+function cacheNewMyEvent(myEvent, resolve, reject) {
+    console.log('inserting: '+JSON.stringify(myEvent));
+    if (dbPromise) {
+        dbPromise.then(async db => {
+            var tx = db.transaction(MYEVENT_STORE_NAME, 'readwrite');
+            var store = tx.objectStore(MYEVENT_STORE_NAME);
+            await store.put(myEvent);
+            return tx.complete;
+        }).then(function () {
+            console.log('added item to the store! '+ JSON.stringify(myEvent));
+            if(resolve) {
+                resolve();
+            }
+        }).catch(function (error) {
+            localStorage.setItem(myEvent.name, error);
+            if(reject) {
+                reject();
+            }
         });
     }
 }

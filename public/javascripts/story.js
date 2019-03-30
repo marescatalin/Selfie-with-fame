@@ -54,7 +54,7 @@ function addPictureToPost() {
     console.log("Clicked");
     var picture = canvas.toDataURL('image/png');
     var picturesDiv = $('#collapsePictures');
-    picturesDiv.children('.list-group').append(createPictureHTML(picture))
+    picturesDiv.children('.list-group').append(createPictureHTML(picture));
     setupPictureRemoval();
 }
 
@@ -121,11 +121,11 @@ function sendAjaxRequest(url, data) {
 
 function submitPost() {
     var story = $("#post-form").serializeArray();
-    var pictures = [];
-    $(".image-list-item").children("img").each(function () {
-        pictures.push(this.src);
-    });
-    story.push({name:'pictures', value:pictures});
+        var pictures = [];
+        $(".image-list-item").children("img").each(function () {
+            pictures.push(this.src);
+        });
+        story.push({name:'pictures', value:pictures});
     sendAjaxRequest("/story/new", story);
 }
 

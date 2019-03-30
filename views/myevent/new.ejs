@@ -32,7 +32,7 @@
         </div>
         <div class="card-body">
             <div class="form-container">
-                <form id="post-form">
+                <form id="post-form" method="post" action="/myevent/new">
                     <div class="form-group">
                         <label for="myevent-name">Name</label>
                         <input name="name" type="text" class="form-control" id="myevent-name"
@@ -70,15 +70,14 @@
                         </button>
                     </div>
                 </form>
-                <div class="accordion mb-2" id="accordionExample">
+                <div class="accordion mb-2" id="myEventPicturesAccordion">
                     <div class="card">
                         <div class="card-header" id="headingOne" data-toggle="collapse"
-                             data-target="#collapsePictures" aria-expanded="false" aria-controls="collapsePictures">
+                             data-target="#collapseEventPictures" aria-expanded="false" aria-controls="collapsePictures">
                             Pictures
                         </div>
-
-                        <div id="collapsePictures" class="collapse" aria-labelledby="headingOne"
-                             data-parent="#accordionExample">
+                        <div id="collapseEventPictures" class="collapse" aria-labelledby="headingOne"
+                             data-parent="#myEventPicturesAccordion">
                             <ul class="list-group">
                             </ul>
                         </div>

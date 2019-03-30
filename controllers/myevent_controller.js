@@ -6,6 +6,5 @@ exports.new = function (req, res) {
     let myEvent = new MyEvent();
     myEvent.name = postData.name;
     myEvent.description = postData.description;
-
-    res.status(200).send('Success');
+    console.log(myEvent);
 };
