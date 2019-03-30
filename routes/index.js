@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Users = require('../models/user');
 
-var login = false;
+var login = true;
 
 var user1 = {handle: 'user1', password:'123', bio:'bio1'};
 var user2 = {handle: 'user2', password:'123', bio:'bio2'};
