@@ -16,6 +16,26 @@ function readUploadedFileAsData(inputFile) {
     });
 }
 
+function setupPictureRemoval() {
+    if(!!('ontouchstart' in window)) {
+        $('.image-list-item').click(function (e) {
+            e.stopImmediatePropagation();
+
+            $(this).children('.picture-remove').click(function () {
+                this.parentNode.remove();
+            })
+        }).hover(function () {
+            /* This is empty because click function already handles it */
+        }, function () {
+            $(this).children('.picture-remove').off('click');
+        })
+    } else {
+        $('.picture-remove').click(function () {
+            this.parentNode.remove();
+        })
+    }
+}
+
 function createPictureHTML(pictureData) {
     return "<li class=\"image-list-item list-group-item\">\n" +
         "<img src=\"" + pictureData + "\" class=\"img-fluid\">\n" +
@@ -49,6 +69,7 @@ $(document).ready(function () {
         try {
             let imgData = await readUploadedFileAsData(imgFile);
             addPictureToEvent(imgData);
+            setupPictureRemoval();
         } catch (e) {
             console.log(e.message);
         }

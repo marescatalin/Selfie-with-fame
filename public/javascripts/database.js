@@ -95,9 +95,8 @@ function cacheNewMyEvent(myEvent, resolve, reject) {
                 resolve();
             }
         }).catch(function (error) {
-            localStorage.setItem(myEvent.name, error);
             if(reject) {
-                reject();
+                reject(error);
             }
         });
     }
