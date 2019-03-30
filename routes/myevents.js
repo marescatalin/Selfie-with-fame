@@ -7,4 +7,8 @@ router.get('/new', function (req, res) {
     res.render('myevent/new');
 });
 
+router.post('/new', function (req, res) {
+    res.redirect('/');
+});
+
 module.exports = router;
