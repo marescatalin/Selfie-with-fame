@@ -4,7 +4,7 @@ class MyEvent {
     constructor(myEventName, description, location, startDate, endDate, pictures, keywords, author) {
         this.myEventName = myEventName;
         this.description = description;
-        this.location = location
+        this.location = location;
         this.startDate = startDate;
         this.endDate = endDate;
         this.pictures = pictures;

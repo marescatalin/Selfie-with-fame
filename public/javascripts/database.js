@@ -22,19 +22,27 @@
         this.keywords = keywords;
         this.author = author;
     }}
+ class User {
+    constructor(username, password, bio) {
+        this.username = username;
+        this.password = password;
+        this.bio = bio;
+    }}
  *
  */
+
 var dbPromise;
 
 const SELFIE_DB_NAME = 'db_selfie_fame_1';
 const STORY_STORE_NAME ='stories';
 const MYEVENT_STORE_NAME = 'myevents';
+const USER_STORE_NAME = 'users';
 
-const STORES = [STORY_STORE_NAME, MYEVENT_STORE_NAME];
+const STORES = [STORY_STORE_NAME, MYEVENT_STORE_NAME,USER_STORE_NAME];
 /**
  * it inits the database
  */
-function initDatabase(){
+function initDatabase (){
     dbPromise = idb.openDb(SELFIE_DB_NAME, 1, function (upgradeDb) {
         console.log(upgradeDb.objectStoreNames);
         STORES.forEach(function (store) {
@@ -43,7 +51,8 @@ function initDatabase(){
             }
         });
     });
-    console.log(dbPromise)
+    console.log(dbPromise);
+    return dbPromise;
 }
 
 function initStores(upgradeDb, store) {
@@ -53,6 +62,9 @@ function initStores(upgradeDb, store) {
             break;
         case MYEVENT_STORE_NAME:
             initMyEventStore(upgradeDb);
+            break;
+        case USER_STORE_NAME:
+            initUserEventStore(upgradeDb);
             break;
     }
 }
@@ -81,6 +93,33 @@ function initMyEventStore(upgradeDb) {
     storyDB.createIndex('author', 'author', {unique: false});
 }
 
+
+
+function initUserEventStore(upgradeDb){
+    let storyDB = upgradeDb.createObjectStore(USER_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+    storyDB.createIndex('username', 'username', {unique: true});
+    storyDB.createIndex('password', 'password', {unique: false});
+    storyDB.createIndex('bio', 'bio', {unique: false});
+}
+
+function storeCachedData(user) {
+    console.log('inserting: '+JSON.stringify(user));
+    if (dbPromise) {
+        dbPromise.then(async db => {
+            var tx = db.transaction(USER_STORE_NAME, 'readwrite');
+            var store = tx.objectStore(USER_STORE_NAME);
+            await store.put(user);
+            console.log(JSON.stringify(user));
+            return tx.complete;
+        }).then(function () {
+            console.log('added item to the store! '+ JSON.stringify(USER_STORE_NAME));
+        }).catch(function (error) {
+            localStorage.setItem(JSON.stringify(USER_STORE_NAME) ,JSON.stringify(USER_STORE_NAME));
+        });
+    }
+}
+
+
 function cacheNewMyEvent(myEvent, resolve, reject) {
     console.log('inserting: '+JSON.stringify(myEvent));
     if (dbPromise) {
@@ -100,4 +139,3 @@ function cacheNewMyEvent(myEvent, resolve, reject) {
             }
         });
     }
-}
