@@ -6,8 +6,8 @@
 
 var app = require('../app');
 var debug = require('debug')('intelligent-web:server');
-var http = require('http');
-
+var https = require('https');
+var fs = require('fs-extra');
 
 /**
  * Get port from environment and store in Express.
@@ -17,10 +17,15 @@ var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTPs server.
  */
+var options = {
+    key: fs.readFileSync('./private_access/localhost.key'),
+    cert: fs.readFileSync('./private_access/localhost.cert')
+};
 
-var server = http.createServer(app);
+
+var server = https.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
