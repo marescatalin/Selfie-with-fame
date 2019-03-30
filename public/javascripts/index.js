@@ -1,11 +1,8 @@
 
 function checkForErrors(isLoginCorrect) {
-    initDatabase();
     if (!isLoginCorrect) {
         alert('login or password is incorrect');
     }
-    storeCachedData({username: 'marescatalinn111' , password : 'barosan' , bio: 'ceva'});
-
 }
 
 function showPassword(){
@@ -17,6 +14,35 @@ function showPassword(){
     }
 }
 
-function signUp(){
-    storeCachedData({username: 'marescatalinn' , password : 'barosan' , bio: 'ceva'});
+function toJSON(serializedArray) {
+    var data = {};
+    for (var index in serializedArray) {
+        data[serializedArray[index].name] = serializedArray[index].value;
+    }
+    return data;
 }
+
+
+$(document).ready(function () {
+    //check for support
+    if ('indexedDB' in window) {
+        initDatabase();
+    } else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
+
+    $('#signup-get').click(function () {
+        $('#signup-form').submit();
+    });
+
+    $('#signup-button').click(function () {
+        let form = $(this).parents('form');
+        let formData = form.serializeArray();
+        let user = toJSON(formData);
+
+        localStorage.setItem("currentUser", user.username);
+        storeCachedData(user, function () {
+            form.submit()
+        });
+    });
+})
