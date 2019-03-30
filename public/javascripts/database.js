@@ -93,7 +93,8 @@ function initMyEventStore(upgradeDb) {
     storyDB.createIndex('author', 'author', {unique: false});
 }
 
-<<<<<<< HEAD
+
+
 function initUserEventStore(upgradeDb){
     let storyDB = upgradeDb.createObjectStore(USER_STORE_NAME, {keyPath: 'id', autoIncrement: true});
     storyDB.createIndex('username', 'username', {unique: true});
@@ -118,6 +119,7 @@ function storeCachedData(user) {
     }
 }
 
+
 function cacheNewMyEvent(myEvent, resolve, reject) {
     console.log('inserting: '+JSON.stringify(myEvent));
     if (dbPromise) {
@@ -138,4 +140,3 @@ function cacheNewMyEvent(myEvent, resolve, reject) {
             }
         });
     }
-}
