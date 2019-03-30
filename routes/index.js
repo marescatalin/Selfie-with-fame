@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var Users = require('../models/user');
+
 var login = false;
 
 var user1 = {handle: 'user1', password:'123', bio:'bio1'};
@@ -25,16 +27,11 @@ stories[1] = story2;
 stories[2] = story3;
 var myStories = JSON.stringify(stories);
 
+
+
 /* GET home page. */
 router.post('/map', function(req,res,next) {
-  var username= req.body.username;
-  var password= req.body.password;
-
-  if (username=='selfiewithfame' && password=='letmein'){
-    res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
-  } else {
-    res.render('index', { title: 'My Class', login_is_correct: false });
-  }
+  res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
 });
 
 router.get('/', function(req, res, next) {
@@ -44,8 +41,10 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Express', login_is_correct: true });
 });
 
-router.get('/testing', function(req, res, next) {
-    res.render('testing', {title: 'Express'});
+router.get('/signup', function(req, res, next) {
+    res.render('signup', {title: 'Express'});
 });
+
+
 
 module.exports = router;
