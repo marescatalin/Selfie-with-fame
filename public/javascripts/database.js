@@ -71,37 +71,37 @@ function initStores(upgradeDb, store) {
 
 // title, message, date, pictures, myEvent, author
 function initStoryStore(upgradeDb) {
-    let storyDB = upgradeDb.createObjectStore(STORY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
-    storyDB.createIndex('myevent', 'myevent', {unique: false});
-    storyDB.createIndex('author', 'author', {unique: false});
-    storyDB.createIndex('title', 'title', {unique: false});
-    storyDB.createIndex('message', 'message', {unique: false});
-    storyDB.createIndex('date', 'date', {unique: false});
-    storyDB.createIndex('pictures', 'pictures', {unique: false});
+    let storyStore = upgradeDb.createObjectStore(STORY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+    storyStore.createIndex('myevent', 'myevent', {unique: false});
+    storyStore.createIndex('author', 'author', {unique: false});
+    storyStore.createIndex('title', 'title', {unique: false});
+    storyStore.createIndex('message', 'message', {unique: false});
+    storyStore.createIndex('date', 'date', {unique: false});
+    storyStore.createIndex('pictures', 'pictures', {unique: false});
 }
 
 // myEventName, description, location, startDate, endDate, pictures, keywords, author
 function initMyEventStore(upgradeDb) {
-    let storyDB = upgradeDb.createObjectStore(MYEVENT_STORE_NAME, {keyPath: 'id', autoIncrement: true});
-    storyDB.createIndex('name', 'name', {unique: false});
-    storyDB.createIndex('description', 'description', {unique: false});
-    storyDB.createIndex('location', 'location', {unique: false})
-    storyDB.createIndex('address', 'address', {unique: false});
-    storyDB.createIndex('postcode', 'postcode', {unique: false});
-    storyDB.createIndex('startDate', 'startDate', {unique: false});
-    storyDB.createIndex('endDate', 'endDate', {unique: false});
-    storyDB.createIndex('pictures', 'pictures', {unique: false});
-    storyDB.createIndex('keywords', 'keywords', {unique: false, multiEntry: true});
-    storyDB.createIndex('author', 'author', {unique: false});
+    let myEventStore = upgradeDb.createObjectStore(MYEVENT_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+    myEventStore.createIndex('name', 'name', {unique: false});
+    myEventStore.createIndex('description', 'description', {unique: false});
+    myEventStore.createIndex('location', 'location', {unique: false})
+    myEventStore.createIndex('address', 'address', {unique: false});
+    myEventStore.createIndex('postcode', 'postcode', {unique: false});
+    myEventStore.createIndex('startDate', 'startDate', {unique: false});
+    myEventStore.createIndex('endDate', 'endDate', {unique: false});
+    myEventStore.createIndex('pictures', 'pictures', {unique: false});
+    myEventStore.createIndex('keywords', 'keywords', {unique: false, multiEntry: true});
+    myEventStore.createIndex('author', 'author', {unique: false});
 }
 
 
 
 function initUserEventStore(upgradeDb){
-    let storyDB = upgradeDb.createObjectStore(USER_STORE_NAME, {keyPath: 'id', autoIncrement: true});
-    storyDB.createIndex('username', 'username', {unique: true});
-    storyDB.createIndex('password', 'password', {unique: false});
-    storyDB.createIndex('bio', 'bio', {unique: false});
+    let userStore = upgradeDb.createObjectStore(USER_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+    userStore.createIndex('username', 'username', {unique: true});
+    userStore.createIndex('password', 'password', {unique: false});
+    userStore.createIndex('bio', 'bio', {unique: false});
 }
 
 function storeCachedData(user, resolve) {
@@ -143,6 +143,28 @@ async function getLoginData(user) {
 
 }
 
+function cacheNewStory(story, resolve, reject) {
+    console.log('inserting: ' + JSON.stringify(story));
+    if (dbPromise) {
+        dbPromise.then(async db => {
+            var tx = db.transaction(STORY_STORE_NAME, 'readwrite');
+            var store = tx.objectStore(STORY_STORE_NAME);
+            await store.put(story);
+            return tx.complete;
+        }).then(function () {
+            console.log('added item to the store! ' + JSON.stringify(story));
+            if (resolve) {
+                resolve();
+            }
+        }).catch(function (error) {
+            localStorage.setItem("Error", error);
+            if (reject) {
+                reject(error);
+            }
+        });
+    }
+}
+
 
 function cacheNewMyEvent(myEvent, resolve, reject) {
     console.log('inserting: ' + JSON.stringify(myEvent));
@@ -159,27 +181,6 @@ function cacheNewMyEvent(myEvent, resolve, reject) {
             }
         }).catch(function (error) {
             localStorage.setItem("Error", error)
-            if (reject) {
-                reject(error);
-            }
-        });
-    }
-}
-
-function cacheNewStory(story, resolve, reject) {
-    console.log('inserting: ' + JSON.stringify(story));
-    if (dbPromise) {
-        dbPromise.then(async db => {
-            var tx = db.transaction(MYEVENT_STORE_NAME, 'readwrite');
-            var store = tx.objectStore(MYEVENT_STORE_NAME);
-            await store.put(story);
-            return tx.complete;
-        }).then(function () {
-            console.log('added item to the store! ' + JSON.stringify(story));
-            if (resolve) {
-                resolve();
-            }
-        }).catch(function (error) {
             if (reject) {
                 reject(error);
             }
@@ -204,6 +205,25 @@ async function getCachedMyEvents() {
     }
 }
 
+async function getCachedMyEventStories(myEventId) {
+    if (dbPromise) {
+        return dbPromise.then(function (db) {
+            console.log('fetching Stories for event ' + myEventId);
+            var tx = db.transaction(STORY_STORE_NAME, 'readonly');
+            var store = tx.objectStore(STORY_STORE_NAME);
+            var index = store.index('myevent');
+            return index.getAll(IDBKeyRange.only(myEventId.toString()));
+        }).then(function (stories) {
+            console.log("Successfuly fetched ", stories);
+            if (stories) {
+                return stories;
+            }
+        }).catch(function (error) {
+            localStorage.setItem("error", error);
+        })
+    }
+}
+
 async function getCachedMyEvent(id) {
     if (dbPromise) {
         return dbPromise.then(function (db) {
@@ -215,7 +235,11 @@ async function getCachedMyEvent(id) {
             if (myEvent){
                 console.log("Successfuly fetched", myEvent);
                 return myEvent;
+            } else {
+                console.log(myEvent);
             }
+        }).catch(function (error) {
+            localStorage.setItem("Database error", error);
         });
     }
 }

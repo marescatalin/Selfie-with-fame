@@ -21,18 +21,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
           integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-    <script src="../javascripts/story.js"></script>
     <script src="../javascripts/database.js"></script>
+    <script src="../javascripts/story.js"></script>
 </head>
 <body>
 <div class="container">
     <div class="card">
-        <div class="card-header">
-            New Post on "Rock N Roll Concert"
+        <div class="card-header" id="new-post-title">
+            New Post
         </div>
         <div class="card-body">
             <div class="form-container">
-                <form id="post-form">
+                <form id="post-form" action="/map" method="post">
                     <div class="form-group">
                         <label for="story-title">Title</label>
                         <input name="title" type="text" class="form-control" id="story-title"
@@ -53,7 +53,7 @@
                 <div class="accordion mb-2" id="accordionExample">
                     <div class="card">
                         <div class="card-header" id="headingOne" data-toggle="collapse"
-                             data-target="#collapsePictures" aria-expanded="false" aria-controls="collapsePictures">
+                             data-target="#collapsePictures" aria-expanded="true" aria-controls="collapsePictures">
                             Pictures
                         </div>
 

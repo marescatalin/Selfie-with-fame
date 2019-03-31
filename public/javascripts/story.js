@@ -24,7 +24,7 @@ function handleError(error) {
 }
 
 function setupPictureRemoval() {
-    if(!!('ontouchstart' in window)) {
+    if (!!('ontouchstart' in window)) {
         $('.image-list-item').click(function (e) {
             e.stopImmediatePropagation();
 
@@ -45,9 +45,9 @@ function setupPictureRemoval() {
 
 function createPictureHTML(pictureData) {
     return "<li class=\"image-list-item list-group-item\">\n" +
-                "<img src=\""+ pictureData + "\" class=\"img-fluid\">\n" +
-                "<span class=\"picture-remove far fa-times-circle\"></span>\n" +
-            "</li>"
+        "<img src=\"" + pictureData + "\" class=\"img-fluid\">\n" +
+        "<span class=\"picture-remove far fa-times-circle\"></span>\n" +
+        "</li>"
 }
 
 function addPictureToPost() {
@@ -96,9 +96,9 @@ function setupPictureCamera() {
 }
 
 function toJSON(serializedArray) {
-    var data={};
-    for (var index in serializedArray){
-        data[serializedArray[index].name]= serializedArray[index].value;
+    var data = {};
+    for (var index in serializedArray) {
+        data[serializedArray[index].name] = serializedArray[index].value;
     }
     return data;
 }
@@ -120,22 +120,41 @@ function sendAjaxRequest(url, data) {
 }
 
 function submitPost() {
-    var story = $("#post-form").serializeArray();
-        var pictures = [];
-        $(".image-list-item").children("img").each(function () {
-            pictures.push(this.src);
-        });
-        story.push({name:'pictures', value:pictures});
+    let postForm = $('#post-form');
+    let story = postForm.serializeArray();
+    let pictures = [];
+    $(".image-list-item").children("img").each(function () {
+        pictures.push(this.src);
+    });
+    story.push({name: 'pictures', value: pictures});
+    story.push({name: 'myevent', value: $('#story-submit').val()});
+    story.push({name: 'author', value: localStorage.getItem("currentUser")});
     sendAjaxRequest("/story/new", story);
+    let storyJSON = toJSON(story);
+    console.log(story);
+    console.log(storyJSON);
+    cacheNewStory(storyJSON, function () {
+        postForm.submit();
+    });
 }
 
 $(document).ready(function () {
     //check for support
     if ('indexedDB' in window) {
         initDatabase();
-    }
-    else {
+    } else {
         console.log('This browser doesn\'t support IndexedDB');
+    }
+
+    let urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('event-id')) {
+        let eventId = urlParams.get('event-id');
+        // let myEvent = getCachedMyEvent(eventId);
+        // myEvent.then(function (myEvent) {
+        //     $('#new-post-title').text("New Post on \"" + myEvent.name + "\"");
+        //     $('#story-submit').val(myEvent.id);
+        // });
+        $('#story-submit').val(eventId);
     }
 
     video = document.querySelector('video');

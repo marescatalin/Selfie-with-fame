@@ -73,11 +73,13 @@
 
             <ul class="list-group">
                 <li class="list-group-item">
-                    Stories <button class="btn btn-primary float-right">Add Story</button>
+                    Stories
+                    <form method="get" action="/story/new" id="new-story-form">
+                        <button name="event-id" class="btn btn-primary float-right">Add Story</button>
+                    </form>
                 </li>
                 <div id="story-div">
-                    <br>
-                    <p>Looks like there are no stories for this event yet</p>
+
                 </div>
             </ul>
         </div>
