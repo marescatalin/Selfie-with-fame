@@ -32,7 +32,7 @@ function update_map() {
     search_param = $("#event-search-bar")[0].value;
     filtered_events = [];
 
-    myEvents.forEach(function (myEvent){
+    myEvents.forEach(function (myEvent) {
         now = new Date();
         if (myEvent.keyword == search_param || myEvent.postcode.includes(search_param) || myEvent.address.includes(search_param) || (myEvent.start < now && myEvent.end > now)) {
             filtered_events.push(myEvent);
@@ -64,13 +64,66 @@ function update_map() {
             }
         })
 }
+function eventInformationHtml(myEvent) {
+    return "<p>Description: " + myEvent.description + "</p>" +
+           "<p>Address: " + myEvent.address + "</p>" +
+            "<p>Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") + "</p>" +
+            "<p>Author: " + myEvent.author + "</p>" +
+            "<p>Keywords: " + myEvent.keywords + "</p>";
+
+}
+
+function createPictureHTML(pictureData) {
+    return "<li class=\"image-list-item list-group-item\">\n" +
+        "<img src=\""+ pictureData + "\" class=\"img-fluid\">\n" +
+        "</li>"
+}
+
+function updateMyEventModal(myEvent) {
+    let myEventModal = $('#myEventModal');
+    myEventModal.find('.modal-title').text(myEvent.name);
+    myEventModal.find('.modal-body').html(eventInformationHtml(myEvent));
+    if(myEvent.pictures && myEvent.pictures.length > 0) {
+        $('#myevent-profile-picture').html("<img class=\"img-fluid\" src=" + myEvent.pictures.pop() + " alt=\"event picture\">");
+        let picturesAccordion = $('#myEventPicturesAccordion');
+        if(myEvent.pictures.length > 0) {
+            picturesAccordion.show();
+            let picturesDiv = picturesAccordion.find('.list-group');
+            myEvent.pictures.forEach(pictureData => {
+                picturesDiv.append(createPictureHTML(pictureData));
+            });
+        } else {
+            picturesAccordion.hide();
+        }
+    }
+}
+
+function expandEvent(btn) {
+    let myEventId = $(btn).data('myeventid');
+    $.ajax({
+        type: 'get',
+        url: "/myevent/" + myEventId,
+        dataType: 'json',
+        success: function (data) {
+            console.log("Success!");
+        },
+        error: function (e) {
+            console.log("Failed");
+            console.log("Getting data from IndexedDB...");
+            let myEvent = getCachedMyEvent(myEventId);
+            myEvent.then(function (myEvent) {
+                updateMyEventModal(myEvent);
+            })
+        }
+    });
+}
 
 function myEventCardHtml(myEvent) {
     let banner = "";
-    if  (myEvent.pictures && myEvent.pictures.length > 0) {
+    if (myEvent.pictures && myEvent.pictures.length > 0) {
         banner = myEvent.pictures[0];
     }
-    return  "<div class=\"card mb-3\" style=\"max-width: 540px;\">\n" +
+    return  "<div>\n" +
             "  <div class=\"row no-gutters\">\n" +
             "    <div class=\"col-md-4\">\n" +
             "      <img src=\"" + banner + "\" class=\"card-img\" alt=\"...\">\n" +
@@ -79,8 +132,9 @@ function myEventCardHtml(myEvent) {
             "      <div class=\"card-body\">\n" +
             "        <h5 class=\"card-title\">" + myEvent.name + "</h5>\n" +
             "        <p class=\"card-text\">" + myEvent.description + "</p>\n" +
-            "        <p class=\"card-text\">Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") +"</p>\n" +
-            "        <p class=\"card-text\"><small class=\"text-muted\">Last updated 3 mins ago</small></p>\n" +
+            "        <p class=\"card-text\">Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") + "</p>\n" +
+            "        <button onclick=\"expandEvent(this)\" type=\"button\" class=\"btn btn-dark\" " +
+            "                data-myeventid=\"" + myEvent.id + "\" data-toggle=\"modal\" data-target=\"#myEventModal\">Expand</button>" +
             "      </div>\n" +
             "    </div>\n" +
             "  </div>\n" +
@@ -103,7 +157,7 @@ function displayMap(loc, curr_events) {
     };
     let map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);// To add the marker to the map, use the 'map' property
 
-    curr_events.forEach(function(myEvent){
+    curr_events.forEach(function (myEvent) {
         if (myEvent.endDate && myEvent.startDate) {
             let marker = new google.maps.Marker({
                 title: myEvent.name,
@@ -122,7 +176,6 @@ function displayMap(loc, curr_events) {
         }
     });
 }
-
 
 
 $(document).ready(function () {

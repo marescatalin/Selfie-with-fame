@@ -196,11 +196,25 @@ async function getCachedMyEvents() {
             var index = store.index('name');
             return index.getAll();
         }).then(function (myEvents) {
-            if (myEvents && myEvents.length>0){
+            if (myEvents){
                 console.log("Successfuly fetched", myEvents);
                 return myEvents;
-            } else {
-                return [];
+            }
+        });
+    }
+}
+
+async function getCachedMyEvent(id) {
+    if (dbPromise) {
+        return dbPromise.then(function (db) {
+            console.log('fetching myEvent with id ' + id);
+            var tx = db.transaction(MYEVENT_STORE_NAME, 'readonly');
+            var store = tx.objectStore(MYEVENT_STORE_NAME);
+            return store.get(id);
+        }).then(function (myEvent) {
+            if (myEvent){
+                console.log("Successfuly fetched", myEvent);
+                return myEvent;
             }
         });
     }

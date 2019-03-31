@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Users = require('../models/user');
 
-var login = true;
+var login = false;
 
 var user1 = {username: 'user1', password: '123', bio: 'bio1'};
 var user2 = {username: 'user2', password: '123', bio: 'bio2'};
@@ -30,7 +30,7 @@ var myStories = JSON.stringify(stories);
 
 
 /* GET home page. */
-router.get('/map', function(req,res,next) {
+router.post('/map', function(req,res,next) {
   res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
 });
 
