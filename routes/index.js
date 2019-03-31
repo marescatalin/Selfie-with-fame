@@ -30,6 +30,10 @@ var myStories = JSON.stringify(stories);
 
 
 /* GET home page. */
+router.post('/map', function(req,res,next) {
+  res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+});
+
 router.get('/map', function(req,res,next) {
   res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
 });
