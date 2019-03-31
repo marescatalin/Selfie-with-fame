@@ -2,10 +2,10 @@ var express = require('express');
 var router = express.Router();
 var Users = require('../models/user');
 
-var login = false;
+var login = true;
 
-var user1 = {handle: 'user1', password:'123', bio:'bio1'};
-var user2 = {handle: 'user2', password:'123', bio:'bio2'};
+var user1 = {username: 'user1', password: '123', bio: 'bio1'};
+var user2 = {username: 'user2', password: '123', bio: 'bio2'};
 var users = [];
 users[0] = user1;
 users[1] = user2;
@@ -18,9 +18,9 @@ events[0] = event1;
 events[1] = event2;
 var myEvents = JSON.stringify(events);
 
-var story1 = {name: 'story1', date: new Date(2019,3,20), text: 'comm1', user: user1, event: event1};
-var story2 = {name: 'story2', date: new Date(2019,3,21,12,30), text: 'comm2', user: user1, event: event1};
-var story3 = {name: 'story3', date: new Date(2019,3,22), text: 'comm3', user: user2, event: event2};
+var story1 = {myevent: 'event1', author: 'user1', title: 'story1', message: 'comm1', date: new Date(2019,3,20)};
+var story2 = {myevent: 'event1', author: 'user1', title: 'story2', message: 'comm2', date: new Date(2019,3,21)};
+var story3 = {myevent: 'event2', author: 'user2', title: 'story3', message: 'comm3', date: new Date(2019,3,22)};
 var stories = [];
 stories[0] = story1;
 stories[1] = story2;
@@ -30,6 +30,10 @@ var myStories = JSON.stringify(stories);
 
 
 /* GET home page. */
+router.get('/map', function(req,res,next) {
+  res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+});
+
 router.get('/map', function(req,res,next) {
   res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
 });

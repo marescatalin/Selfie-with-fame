@@ -124,6 +124,25 @@ function storeCachedData(user, resolve) {
     }
 }
 
+async function getLoginData(user) {
+    if (dbPromise) {
+        return dbPromise.then(function (db) {
+            console.log('fetching user from database');
+            var tx = db.transaction(USER_STORE_NAME, 'readonly');
+            var store = tx.objectStore(USER_STORE_NAME);
+            var index = store.index('username');
+            return index.get(IDBKeyRange.only(user.username));
+        }).then(function (foundObject) {
+            return (foundObject && (foundObject.username == user.username &&
+                foundObject.password == user.password));
+        });
+    }
+    else{
+        return false;
+    }
+
+}
+
 
 function cacheNewMyEvent(myEvent, resolve, reject) {
     console.log('inserting: ' + JSON.stringify(myEvent));
@@ -140,6 +159,27 @@ function cacheNewMyEvent(myEvent, resolve, reject) {
             }
         }).catch(function (error) {
             localStorage.setItem("Error", error)
+            if (reject) {
+                reject(error);
+            }
+        });
+    }
+}
+
+function cacheNewStory(story, resolve, reject) {
+    console.log('inserting: ' + JSON.stringify(story));
+    if (dbPromise) {
+        dbPromise.then(async db => {
+            var tx = db.transaction(MYEVENT_STORE_NAME, 'readwrite');
+            var store = tx.objectStore(MYEVENT_STORE_NAME);
+            await store.put(story);
+            return tx.complete;
+        }).then(function () {
+            console.log('added item to the store! ' + JSON.stringify(story));
+            if (resolve) {
+                resolve();
+            }
+        }).catch(function (error) {
             if (reject) {
                 reject(error);
             }

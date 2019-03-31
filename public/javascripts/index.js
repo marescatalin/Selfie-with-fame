@@ -1,18 +1,4 @@
 
-function checkForErrors(isLoginCorrect) {
-    if (!isLoginCorrect) {
-        alert('login or password is incorrect');
-    }
-}
-
-function showPassword(){
-    var x = document.getElementById("password");
-    if (x.type === "password") {
-        x.type = "text";
-    } else {
-        x.type = "password";
-    }
-}
 
 function toJSON(serializedArray) {
     var data = {};
@@ -30,9 +16,25 @@ $(document).ready(function () {
     } else {
         console.log('This browser doesn\'t support IndexedDB');
     }
+    $('#check').click(function() {
+        $(this).is(':checked') ? $('input[name=password]').attr('type', 'text') : $('input[name=password]').attr('type', 'password');
+    });
 
     $('#signup-get').click(function () {
         $('#signup-form').submit();
+    });
+
+    $('#login').click(async function () {
+        let form = $(this).parents('form');
+        let formData = form.serializeArray();
+        let user = toJSON(formData);
+        if (await getLoginData(user)) {
+            localStorage.setItem("currentUser", user.username);
+            $('#signin-form').submit();
+        } else {
+            alert('username or password is incorrect');
+            $('input[name=password]').val('');
+        }
     });
 
     $('#signup-button').click(function () {

@@ -10,6 +10,5 @@ exports.new = function (req, res) {
     story.pictures = postData.pictures;
     story.myEvent = '';
     story.author = '';
-    console.log(story);
     res.status(200).send('Success');
 }
