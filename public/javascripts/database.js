@@ -38,7 +38,7 @@ const STORY_STORE_NAME ='stories';
 const MYEVENT_STORE_NAME = 'myevents';
 const USER_STORE_NAME = 'users';
 
-const STORES = [STORY_STORE_NAME, MYEVENT_STORE_NAME,USER_STORE_NAME];
+const STORES = [STORY_STORE_NAME, MYEVENT_STORE_NAME, USER_STORE_NAME];
 /**
  * it inits the database
  */
@@ -102,7 +102,7 @@ function initUserEventStore(upgradeDb){
     storyDB.createIndex('bio', 'bio', {unique: false});
 }
 
-function storeCachedData(user) {
+function storeCachedData(user, resolve) {
     console.log('inserting: '+JSON.stringify(user));
     if (dbPromise) {
         dbPromise.then(async db => {
@@ -113,10 +113,32 @@ function storeCachedData(user) {
             return tx.complete;
         }).then(function () {
             console.log('added item to the store! '+ JSON.stringify(USER_STORE_NAME));
+            if(resolve) {
+                resolve();
+            }
         }).catch(function (error) {
             localStorage.setItem(JSON.stringify(USER_STORE_NAME) ,JSON.stringify(USER_STORE_NAME));
         });
     }
+}
+
+async function getLoginData(user) {
+    if (dbPromise) {
+        return dbPromise.then(function (db) {
+            console.log('fetching user from database');
+            var tx = db.transaction(USER_STORE_NAME, 'readonly');
+            var store = tx.objectStore(USER_STORE_NAME);
+            var index = store.index('username');
+            return index.get(IDBKeyRange.only(user.username));
+        }).then(function (foundObject) {
+            return (foundObject && (foundObject.username == user.username &&
+                foundObject.password == user.password));
+        });
+    }
+    else{
+        return false;
+    }
+
 }
 
 

@@ -1,22 +1,50 @@
 
-function checkForErrors(isLoginCorrect) {
-    initDatabase();
-    if (!isLoginCorrect) {
-        alert('login or password is incorrect');
-    }
-    storeCachedData({username: 'marescatalinn111' , password : 'barosan' , bio: 'ceva'});
 
+function toJSON(serializedArray) {
+    var data = {};
+    for (var index in serializedArray) {
+        data[serializedArray[index].name] = serializedArray[index].value;
+    }
+    return data;
 }
 
-function showPassword(){
-    var x = document.getElementById("password");
-    if (x.type === "password") {
-        x.type = "text";
+
+$(document).ready(function () {
+    //check for support
+    if ('indexedDB' in window) {
+        initDatabase();
     } else {
-        x.type = "password";
+        console.log('This browser doesn\'t support IndexedDB');
     }
-}
+    $('#check').click(function() {
+        $(this).is(':checked') ? $('input[name=password]').attr('type', 'text') : $('input[name=password]').attr('type', 'password');
+    });
 
-function signUp(){
-    storeCachedData({username: 'marescatalinn' , password : 'barosan' , bio: 'ceva'});
-}
+    $('#signup-get').click(function () {
+        $('#signup-form').submit();
+    });
+
+    $('#login').click(async function () {
+        let form = $(this).parents('form');
+        let formData = form.serializeArray();
+        let user = toJSON(formData);
+        if (await getLoginData(user)) {
+            localStorage.setItem("currentUser", user.username);
+            $('#signin-form').submit();
+        } else {
+            alert('username or password is incorrect');
+            $('input[name=password]').val('');
+        }
+    });
+
+    $('#signup-button').click(function () {
+        let form = $(this).parents('form');
+        let formData = form.serializeArray();
+        let user = toJSON(formData);
+
+        localStorage.setItem("currentUser", user.username);
+        storeCachedData(user, function () {
+            form.submit()
+        });
+    });
+})

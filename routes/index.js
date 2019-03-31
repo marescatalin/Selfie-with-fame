@@ -34,6 +34,10 @@ router.get('/map', function(req,res,next) {
   res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
 });
 
+router.get('/map', function(req,res,next) {
+  res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+});
+
 router.get('/', function(req, res, next) {
   if (login)
     res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
@@ -43,6 +47,10 @@ router.get('/', function(req, res, next) {
 
 router.get('/signup', function(req, res, next) {
     res.render('signup', {title: 'Express'});
+});
+
+router.post('/signup', function (req, res) {
+    res.redirect('/map');
 });
 
 

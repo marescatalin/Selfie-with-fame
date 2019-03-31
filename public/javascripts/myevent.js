@@ -85,6 +85,8 @@ $(document).ready(function () {
         formData.push({name: 'pictures', value: pictures});
         formData.push({name: 'author', value: localStorage.getItem('currentUser')});
         let jsonData = toJSON(formData);
+        jsonData.startDate = new Date(jsonData.startDate);
+        jsonData.endDate = new Date(jsonData.endDate);
         cacheNewMyEvent(jsonData, function () {form.submit()});
     });
 });
