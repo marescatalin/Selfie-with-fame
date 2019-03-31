@@ -67,10 +67,10 @@ function update_map() {
 
 function myEventCardHtml(myEvent) {
     let banner = "";
-    if  (myEvent.pictures.length > 0) {
+    if  (myEvent.pictures && myEvent.pictures.length > 0) {
         banner = myEvent.pictures[0];
     }
-    let x = "<div class=\"card mb-3\" style=\"max-width: 540px;\">\n" +
+    return  "<div class=\"card mb-3\" style=\"max-width: 540px;\">\n" +
             "  <div class=\"row no-gutters\">\n" +
             "    <div class=\"col-md-4\">\n" +
             "      <img src=\"" + banner + "\" class=\"card-img\" alt=\"...\">\n" +
@@ -79,14 +79,12 @@ function myEventCardHtml(myEvent) {
             "      <div class=\"card-body\">\n" +
             "        <h5 class=\"card-title\">" + myEvent.name + "</h5>\n" +
             "        <p class=\"card-text\">" + myEvent.description + "</p>\n" +
+            "        <p class=\"card-text\">Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") +"</p>\n" +
             "        <p class=\"card-text\"><small class=\"text-muted\">Last updated 3 mins ago</small></p>\n" +
             "      </div>\n" +
             "    </div>\n" +
             "  </div>\n" +
             "</div>"
-    console.log(myEvent);
-    console.log(x);
-    return x;
 }
 
 function getLocation() {
@@ -128,29 +126,25 @@ function displayMap(loc, curr_events) {
 
 
 $(document).ready(function () {
-
-    var user1 = {username: 'user1', password: '123', bio: 'bio1'};
-    var user2 = {username: 'user2', password: '123', bio: 'bio2'};
-    storeCachedData(user1);
-    storeCachedData(user2);
-
-    var event1 = {myEventName: 'event1', description: 'test event 1', location: {lat: 53.372900, lng: -1.506912}, startDate: new Date(2019,2,10), endDate: new Date(2019,4,20), keywords: 'key1', author: 'user1'};
-    var event2 = {myEventName: 'event2', description: 'test event 2', location: {lat: 53.372417, lng: -1.504116}, startDate: new Date(2019,2,15), endDate: new Date(2019,5,20), keywords: 'key2', author: 'user1'};
-    cacheNewMyEvent(event1);
-    cacheNewMyEvent(event2);
-
-    var story1 = {myevent: 'event1', author: 'user1', title: 'story1', message: 'comm1', date: new Date(2019,3,20)};
-    var story2 = {myevent: 'event1', author: 'user1', title: 'story2', message: 'comm2', date: new Date(2019,3,21)};
-    var story3 = {myevent: 'event2', author: 'user2', title: 'story3', message: 'comm3', date: new Date(2019,3,22)};
-    cacheNewStory(story1);
-    cacheNewStory(story2);
-    cacheNewStory(story3);
+    //check for support
+    if ('indexedDB' in window) {
+        initDatabase();
+    } else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
 
     $("#event-search-button").click(update_map);
 
     myUsers = JSON.parse(document.getElementById("myUsers").innerText);
-    myEvents = JSON.parse(document.getElementById("myEvents").innerText);
+    myEvents = [];
     myStories = JSON.parse(document.getElementById("myStories").innerText);
+
+    let myCachedEvents = getCachedMyEvents();
+    myCachedEvents.then(function (myEventList) {
+        myEvents = myEvents.concat(myEventList);
+        console.log("Retrieved events", myEvents);
+        initialize();
+    })
 });
 
 google.maps.event.addDomListener(window, 'load', initialize);

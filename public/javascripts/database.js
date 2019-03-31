@@ -186,3 +186,22 @@ function cacheNewStory(story, resolve, reject) {
         });
     }
 }
+
+async function getCachedMyEvents() {
+    if (dbPromise) {
+        return dbPromise.then(function (db) {
+            console.log('fetching myEvents');
+            var tx = db.transaction(MYEVENT_STORE_NAME, 'readonly');
+            var store = tx.objectStore(MYEVENT_STORE_NAME);
+            var index = store.index('name');
+            return index.getAll();
+        }).then(function (myEvents) {
+            if (myEvents && myEvents.length>0){
+                console.log("Successfuly fetched", myEvents);
+                return myEvents;
+            } else {
+                return [];
+            }
+        });
+    }
+}

@@ -11,8 +11,8 @@ users[0] = user1;
 users[1] = user2;
 var myUsers = JSON.stringify(users);
 
-var event1 = {name: 'event1', description:"Just an example event", pictures: [], start: new Date(2019,2,10), end: new Date(2019,4,20), location: {lat: 53.372900, lng: -1.506912}, keyword: 'key1', user: user1};
-var event2 = {name: 'event2', description:"Just an example event", pictures: [], start: new Date(2019,2,15), end: new Date(2019,5,20), location: {lat: 53.372417, lng: -1.504116}, keyword: 'key2', user: user1};
+var event1 = {name: 'event1', description:"Just an example event", pictures: [], startDate: new Date(2019,2,10), endDate: new Date(2019,4,20), location: {lat: 53.372900, lng: -1.506912}, keywords: 'key1', user: user1};
+var event2 = {name: 'event2', description:"Just an example event", pictures: [], startDate: new Date(2019,2,15), endDate: new Date(2019,5,20), location: {lat: 53.372417, lng: -1.504116}, keywords: 'key2', user: user1};
 var events = [];
 events[0] = event1;
 events[1] = event2;
