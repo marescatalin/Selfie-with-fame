@@ -234,6 +234,10 @@ $(document).ready(function () {
         console.log("Retrieved events", myEvents);
         initialize();
     })
+
+    $('#myEventModal').on('hidden.bs.modal', function () {
+        $('#story-div').html("");
+    })
 });
 
 google.maps.event.addDomListener(window, 'load', initialize);
