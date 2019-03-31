@@ -121,7 +121,7 @@ function storeCachedData(user) {
 
 
 function cacheNewMyEvent(myEvent, resolve, reject) {
-    console.log('inserting: '+JSON.stringify(myEvent));
+    console.log('inserting: ' + JSON.stringify(myEvent));
     if (dbPromise) {
         dbPromise.then(async db => {
             var tx = db.transaction(MYEVENT_STORE_NAME, 'readwrite');
@@ -129,13 +129,35 @@ function cacheNewMyEvent(myEvent, resolve, reject) {
             await store.put(myEvent);
             return tx.complete;
         }).then(function () {
-            console.log('added item to the store! '+ JSON.stringify(myEvent));
-            if(resolve) {
+            console.log('added item to the store! ' + JSON.stringify(myEvent));
+            if (resolve) {
                 resolve();
             }
         }).catch(function (error) {
-            if(reject) {
+            if (reject) {
                 reject(error);
             }
         });
     }
+}
+
+function cacheNewStory(story, resolve, reject) {
+    console.log('inserting: ' + JSON.stringify(story));
+    if (dbPromise) {
+        dbPromise.then(async db => {
+            var tx = db.transaction(MYEVENT_STORE_NAME, 'readwrite');
+            var store = tx.objectStore(MYEVENT_STORE_NAME);
+            await store.put(story);
+            return tx.complete;
+        }).then(function () {
+            console.log('added item to the store! ' + JSON.stringify(story));
+            if (resolve) {
+                resolve();
+            }
+        }).catch(function (error) {
+            if (reject) {
+                reject(error);
+            }
+        });
+    }
+}
