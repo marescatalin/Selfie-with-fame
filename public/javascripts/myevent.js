@@ -56,6 +56,17 @@ function toJSON(serializedArray) {
     return data;
 }
 
+function findLocation(address, callback) {
+    let geocoder = new google.maps.Geocoder();
+    geocoder.geocode( {'address': address}, function(results, status) {
+        if (status === 'OK') {
+            callback(results[0].geometry.location);
+        } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+        }
+    });
+}
+
 $(document).ready(function () {
     //check for support
     if ('indexedDB' in window) {
@@ -84,9 +95,14 @@ $(document).ready(function () {
         });
         formData.push({name: 'pictures', value: pictures});
         formData.push({name: 'author', value: localStorage.getItem('currentUser')});
-        let jsonData = toJSON(formData);
-        jsonData.startDate = new Date(jsonData.startDate);
-        jsonData.endDate = new Date(jsonData.endDate);
-        cacheNewMyEvent(jsonData, function () {form.submit()});
+        findLocation($('#myevent-postcode').val(), function (loc) {
+                let location = {lat: loc.lat(), lng: loc.lng()};
+                formData.push({name: 'location', value: location});
+
+                let jsonData = toJSON(formData);
+                jsonData.startDate = new Date(jsonData.startDate);
+                jsonData.endDate = new Date(jsonData.endDate);
+                cacheNewMyEvent(jsonData, function () {form.submit()});
+            });
     });
 });

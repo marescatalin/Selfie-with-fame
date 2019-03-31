@@ -83,9 +83,11 @@ function initStoryStore(upgradeDb) {
 // myEventName, description, location, startDate, endDate, pictures, keywords, author
 function initMyEventStore(upgradeDb) {
     let storyDB = upgradeDb.createObjectStore(MYEVENT_STORE_NAME, {keyPath: 'id', autoIncrement: true});
-    storyDB.createIndex('myEventName', 'myEventName', {unique: false});
+    storyDB.createIndex('name', 'name', {unique: false});
     storyDB.createIndex('description', 'description', {unique: false});
-    storyDB.createIndex('location', 'location', {unique: false});
+    storyDB.createIndex('location', 'location', {unique: false})
+    storyDB.createIndex('address', 'address', {unique: false});
+    storyDB.createIndex('postcode', 'postcode', {unique: false});
     storyDB.createIndex('startDate', 'startDate', {unique: false});
     storyDB.createIndex('endDate', 'endDate', {unique: false});
     storyDB.createIndex('pictures', 'pictures', {unique: false});
@@ -137,6 +139,7 @@ function cacheNewMyEvent(myEvent, resolve, reject) {
                 resolve();
             }
         }).catch(function (error) {
+            localStorage.setItem("Error", error)
             if (reject) {
                 reject(error);
             }

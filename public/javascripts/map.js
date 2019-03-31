@@ -63,24 +63,27 @@ function update_map() {
 }
 
 function myEventCardHtml(myEvent) {
-    let banner = ""
+    let banner = "";
     if  (myEvent.pictures.length > 0) {
         banner = myEvent.pictures[0];
     }
-    return  "<div class=\"card mb-3\" style=\"max-width: 540px;\">\n" +
+    let x = "<div class=\"card mb-3\" style=\"max-width: 540px;\">\n" +
             "  <div class=\"row no-gutters\">\n" +
             "    <div class=\"col-md-4\">\n" +
             "      <img src=\"" + banner + "\" class=\"card-img\" alt=\"...\">\n" +
             "    </div>\n" +
             "    <div class=\"col-md-8\">\n" +
             "      <div class=\"card-body\">\n" +
-            "        <h5 class=\"card-title\">" + myEvent.title + "</h5>\n" +
+            "        <h5 class=\"card-title\">" + myEvent.name + "</h5>\n" +
             "        <p class=\"card-text\">" + myEvent.description + "</p>\n" +
             "        <p class=\"card-text\"><small class=\"text-muted\">Last updated 3 mins ago</small></p>\n" +
             "      </div>\n" +
             "    </div>\n" +
             "  </div>\n" +
             "</div>"
+    console.log(myEvent);
+    console.log(x);
+    return x;
 }
 
 function getLocation() {
