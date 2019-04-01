@@ -238,6 +238,10 @@ $(document).ready(function () {
     $('#myEventModal').on('hidden.bs.modal', function () {
         $('#story-div').html("");
     })
+
+    $('#addevent').click(function () {
+        $(location).attr('href', '/myevent/new');
+    });
 });
 
 google.maps.event.addDomListener(window, 'load', initialize);
