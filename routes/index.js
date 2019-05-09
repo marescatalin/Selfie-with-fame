@@ -27,6 +27,10 @@ stories[1] = story2;
 stories[2] = story3;
 var myStories = JSON.stringify(stories);
 
+var character = require('../controllers/users');
+var initDB= require('../controllers/init');
+initDB.init();
+
 
 
 /* GET home page. */
