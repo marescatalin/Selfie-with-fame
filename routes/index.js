@@ -33,13 +33,9 @@ initDB.init();
 // user.getUser();
 
 
-
 /* GET home page. */
-router.post('/map', function(req,res) {
-    if(user.query(req,res))
-        res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
-    else
-        res.render('index', {title: 'Express', username: JSON.stringify(req.body.username), login_is_correct: false});
+router.post('/map',async function(req,res) {
+    user.query(req, res);
 });
 
 router.get('/map', function(req,res,next) {

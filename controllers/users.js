@@ -1,4 +1,4 @@
-var User = require('../models/users');
+var User = require('../models/user');
 var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
 
@@ -9,29 +9,32 @@ exports.getUser = function () {
     });
 };
 
+
 exports.query = function (req, res) {
     var userData = req.body;
-    var result = false;
     if (userData == null) {
         res.status(403).send('No data sent!')
     }
     try {
-        var user = new User({
-            username: userData.username,
-            password: userData.password,
-            bio: userData.bio
-        });
-        console.log('received: ' + user);
-        User.findOne({ username: req.body.username}, function(err, user) {
-            if(user ===null){
-                result = false;
-            }else if (user.username === req.body.username && user.password === req.body.password){
-                result =  true;
-            } else {
-                result = false;
+        // var user = new User({
+        //     username: userData.username,
+        //     password: userData.password,
+        //     bio: userData.bio
+        // });
+        // console.log('received: ' + user);
+
+        User.findOne({username: userData.username}, function (err, user) {
+            if (user === null) {
+                res.render('index', {title: 'Express', username: JSON.stringify(req.body.username), login_is_correct: false});
+            } else if (user.username === req.body.username) {
+                if (bcrypt.compareSync(userData.password, user.password))
+                {
+                    res.redirect('map');
+                }else{
+                    res.render('index', {title: 'Express', username: JSON.stringify(req.body.username), login_is_correct: false});
+                }
             }
         });
-        return result;
 
     } catch (e) {
         res.status(500).send('error ' + e);
@@ -46,6 +49,7 @@ exports.insert = function (req, res) {
     }
     try {
         let password = bcrypt.hashSync(userData.password, salt);
+        console.log(password);
         var user = new User({
             username: userData.username,
             password: password,

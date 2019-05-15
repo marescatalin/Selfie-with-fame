@@ -1,35 +1,23 @@
-"use strict";
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-class User {
-    constructor(username, password, bio) {
-        this._username = username;
-        this._password = password;
-        this._bio = bio;
+var User = new Schema(
+    {
+        username: {type: String, required: true, max: 100},
+        password: {type: String, required: true, max: 100},
+        bio: {type: String, required: true, max: 100}
     }
+);
 
-    get username() {
-        return this._username;
-    }
+// Virtual for a character's age
+// Character.virtual('age')
+//     .get(function () {
+//         const currentDate = new Date().getFullYear();
+//         const result= currentDate - this.dob;
+//         return result;
+//     });
 
-    get password() {
-        return this._password;
-    }
 
-    get bio() {
-        return this._bio;
-    }
+var userModel = mongoose.model('User', User );
 
-    set username(value) {
-        this._username = value;
-    }
-
-    set password(value) {
-        this._password = value;
-    }
-
-    set bio(value) {
-        this._bio = value;
-    }
-}
-
-module.exports = User;
+module.exports = userModel;

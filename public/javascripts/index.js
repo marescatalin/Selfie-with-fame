@@ -60,10 +60,11 @@ $(document).ready(function () {
         let form = $(this).parents('form');
         let formData = form.serializeArray();
         let user = toJSON(formData);
-
+        //
         localStorage.setItem("currentUser", user.username);
-        storeCachedData(user, function () {
-            form.submit()
-        });
+        form.submit()
+        // storeCachedData(user, function () {
+        //     form.submit()
+        // });
     });
 })
