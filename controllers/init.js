@@ -1,24 +1,28 @@
 var mongoose = require('mongoose');
-var Character = require('../models/users');
-
+var User = require('../models/users');
+var bcrypt = require('bcryptjs');
 
 exports.init= function() {
+
     // uncomment if you need to drop the database
-    //
-    // Character.remove({}, function(err) {
-    //    console.log('collection removed')
-    // });
-
-    const dob=new Date(1908, 12, 1).getFullYear();
-    var character = new Character({
-        first_name: 'Mickey',
-        family_name: 'Mouse',
-        dob: dob
+    User.deleteMany({}, function(err, obj) {
+        if (err) throw err;
+        console.log("User Collection Deleted");
     });
-    console.log('dob: '+character.dob);
 
-    character.save(function (err, results) {
+    var user = new User({
+        username: 'acb16cm',
+        password: '123456',
+        bio: 'ceva'
+    });
+
+    console.log('username: '+user.username);
+    console.log('password: '+user.password);
+    console.log('bio: '+user.bio);
+    //
+    //
+    user.save(function (err, results) {
         console.log(results._id);
     });
-}
+};
 

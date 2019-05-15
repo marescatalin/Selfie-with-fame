@@ -1,31 +1,42 @@
-var Character = require('../models/users');
+var User = require('../models/users');
+var bcrypt = require('bcryptjs');
+var salt = bcrypt.genSaltSync(10);
 
-exports.getAge = function (req, res) {
+exports.getUser = function () {
+   User.findOne({}, function(err, result) {
+        if (err) throw err;
+        console.log(result.username);
+    });
+};
+
+exports.query = function (req, res) {
     var userData = req.body;
+    var result = false;
     if (userData == null) {
         res.status(403).send('No data sent!')
     }
     try {
-        Character.find({first_name: userData.firstname, family_name: userData.lastname},
-            'first_name family_name dob age',
-            function (err, characters) {
-                if (err)
-                    res.status(500).send('Invalid data!');
-                var character = null;
-                if (characters.length > 0) {
-                    var firstElem = characters[0];
-                    character = {
-                        name: firstElem.first_name, surname: firstElem.family_name,
-                        dob: firstElem.dob, age: firstElem.age
-                    };
-                }
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(character));
-            });
+        var user = new User({
+            username: userData.username,
+            password: userData.password,
+            bio: userData.bio
+        });
+        console.log('received: ' + user);
+        User.findOne({ username: req.body.username}, function(err, user) {
+            if(user ===null){
+                result = false;
+            }else if (user.username === req.body.username && user.password === req.body.password){
+                result =  true;
+            } else {
+                result = false;
+            }
+        });
+        return result;
+
     } catch (e) {
         res.status(500).send('error ' + e);
     }
-}
+};
 
 
 exports.insert = function (req, res) {
@@ -34,22 +45,23 @@ exports.insert = function (req, res) {
         res.status(403).send('No data sent!')
     }
     try {
-        var character = new Character({
-            first_name: userData.firstname,
-            family_name: userData.lastname,
-            dob: userData.year
+        let password = bcrypt.hashSync(userData.password, salt);
+        var user = new User({
+            username: userData.username,
+            password: password,
+            bio: userData.bio
         });
-        console.log('received: ' + character);
+        console.log('received: ' + user);
 
-        character.save(function (err, results) {
+        user.save(function (err, results) {
             console.log(results._id);
             if (err)
                 res.status(500).send('Invalid data!');
 
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(character));
+            // res.setHeader('Content-Type', 'application/json');
+            // res.send(JSON.stringify(user));
         });
     } catch (e) {
         res.status(500).send('error ' + e);
     }
-}
+};
