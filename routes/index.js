@@ -27,15 +27,19 @@ stories[1] = story2;
 stories[2] = story3;
 var myStories = JSON.stringify(stories);
 
-var character = require('../controllers/users');
+var user = require('../controllers/users');
 var initDB= require('../controllers/init');
 initDB.init();
+// user.getUser();
 
 
 
 /* GET home page. */
-router.post('/map', function(req,res,next) {
-  res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+router.post('/map', function(req,res) {
+    if(user.query(req,res))
+        res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+    else
+        res.render('index', {title: 'Express', username: JSON.stringify(req.body.username), login_is_correct: false});
 });
 
 router.get('/map', function(req,res,next) {
@@ -43,10 +47,12 @@ router.get('/map', function(req,res,next) {
 });
 
 router.get('/', function(req, res, next) {
-  if (login)
-    res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
-  else
-    res.render('index', { title: 'Express', login_is_correct: true });
+    if (login){
+        res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+    }else{
+        res.render('index', {title: 'Express', username: "", login_is_correct: true});
+    }
+
 });
 
 router.get('/signup', function(req, res, next) {
@@ -54,6 +60,7 @@ router.get('/signup', function(req, res, next) {
 });
 
 router.post('/signup', function (req, res) {
+    user.insert(req,res);
     res.redirect('/map');
 });
 

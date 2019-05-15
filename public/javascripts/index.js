@@ -1,4 +1,9 @@
-
+function checkLogin(login_is_correct,username){
+    if (!login_is_correct) {
+        document.getElementById("username").value = username;
+        alert("log in is incorrect");
+    }
+}
 
 function toJSON(serializedArray) {
     var data = {};
@@ -34,18 +39,22 @@ $(document).ready(function () {
         $('#signup-form').submit();
     });
 
-    $('#login').click(async function () {
-        let form = $(this).parents('form');
-        let formData = form.serializeArray();
-        let user = toJSON(formData);
-        if (await getLoginData(user)) {
-            localStorage.setItem("currentUser", user.username);
-            $('#signin-form').submit();
-        } else {
-            alert('username or password is incorrect');
-            $('input[name=password]').val('');
-        }
+    $('#login').click(function () {
+        $('#signin-form').submit();
     });
+
+    // $('#login').click(async function () {
+    //     let form = $(this).parents('form');
+    //     let formData = form.serializeArray();
+    //     let user = toJSON(formData);
+    //     if (await getLoginData(user)) {
+    //         localStorage.setItem("currentUser", user.username);
+    //         $('#signin-form').submit();
+    //     } else {
+    //         alert('username or password is incorrect');
+    //         $('input[name=password]').val('');
+    //     }
+    // });
 
     $('#signup-button').click(function () {
         let form = $(this).parents('form');
