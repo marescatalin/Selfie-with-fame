@@ -30,11 +30,22 @@ function initialize() {
 
 function update_map() {
     search_param = $("#event-search-bar")[0].value;
+    console.log(search_param);
     filtered_events = [];
 
     myEvents.forEach(function (myEvent) {
-        now = new Date();
-        if (myEvent.keyword == search_param || myEvent.postcode.includes(search_param) || myEvent.address.includes(search_param) || (myEvent.start < now && myEvent.end > now)) {
+        var year = search_param.split("/")[0];
+        var month = search_param.split("/")[1]-1;
+        var day = search_param.split("/")[2];
+        var date_search = new Date(year,month,day);
+        console.log(date_search);
+        var searchStart = myEvent.startDate;
+        searchStart.setDate(searchStart.getDate()-1);
+        var searchEnd = myEvent.endDate;
+        searchEnd.setDate(searchEnd.getDate()+1);
+        if (myEvent.name == search_param || myEvent.description.includes(search_param) || myEvent.address.includes(search_param) ||
+            myEvent.postcode.includes(search_param) ||
+            (searchStart < date_search && searchEnd > date_search)) {
             filtered_events.push(myEvent);
         }
     });
@@ -194,22 +205,20 @@ function displayMap(loc, curr_events) {
     let map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);// To add the marker to the map, use the 'map' property
 
     curr_events.forEach(function (myEvent) {
-        if (myEvent.endDate && myEvent.startDate) {
-            let marker = new google.maps.Marker({
-                title: myEvent.name,
-                position: {lat: myEvent.location.lat, lng: myEvent.location.lng},
-                map: map
-            });
+        let marker = new google.maps.Marker({
+            title: myEvent.name,
+            position: {lat: myEvent.location.lat, lng: myEvent.location.lng},
+            map: map
+        });
 
-            let infoWindow = new google.maps.InfoWindow({
-                content: myEventCardHtml(myEvent),
-                maxWidth: 400
-            });
+        let infoWindow = new google.maps.InfoWindow({
+            content: myEventCardHtml(myEvent),
+            maxWidth: 400
+        });
 
-            marker.addListener('click', function () {
-                infoWindow.open(marker.get('map'), marker);
-            });
-        }
+        marker.addListener('click', function () {
+            infoWindow.open(marker.get('map'), marker);
+        });
     });
 }
 
