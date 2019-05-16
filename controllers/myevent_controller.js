@@ -9,7 +9,11 @@ exports.new = function (req, res) {
     }
     console.log(postData);
     try {
-        let authorUser = User.find({username: })
+        let username = req.cookies.session;
+        let authorUser = "Anonymous";
+        if(username) {
+            authorUser = User.find({username: username})
+        }
 
         var myEvent = new MyEvent ({
             myEventName: postData.name,
@@ -24,7 +28,7 @@ exports.new = function (req, res) {
             endDate: postData.endDate,
             address: postData.address,
             postCode: postData.postCode,
-            author:
+            author: authorUser
         });
         console.log("Received " + myEvent);
 
