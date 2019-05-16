@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var Users = require('../models/user');
 
 var login = false;
 

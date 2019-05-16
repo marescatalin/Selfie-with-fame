@@ -1,24 +1,28 @@
-"use strict";
+'use strict';
 
-class MyEvent {
-    constructor(myEventName, description, location, startDate, endDate, pictures, keywords, author) {
-        this.myEventName = myEventName;
-        this.description = description;
-        this.location = location;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.pictures = pictures;
-        this.keywords = keywords;
-        this.author = author;
+var mongoose = require('mongoose');
+
+var Schema = mongoose.Schema;
+
+var MyEvent = new Schema(
+    {
+        myEventName: {type:String},
+        description: {type:String},
+        location: {
+            lat: {type:String},
+            lng: {type:String},
+            address: {type:String},
+            postcode: {type:String}
+        },
+        startDate: {type:Date},
+        endDate: {type:Date},
+        pictures: {type:String},
+        keywords: {type:Array},
+        author: {type:Schema.ObjectId}
     }
+);
 
-    set name(name) {
-        this._name = name.charAt(0).toUpperCase() + name.slice(1);
-    }
+var myEventModel = mongoose.model('MyEvent', MyEvent );
 
-    get name() {
-        return this._name;
-    }
-}
 
-module.exports = MyEvent;
+module.exports = myEventModel;

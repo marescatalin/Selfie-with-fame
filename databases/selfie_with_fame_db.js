@@ -4,7 +4,7 @@ var bcrypt = require('bcryptjs');
 
 //The URL which will be queried. Run "mongod.exe" for this to connect
 //var url = 'mongodb://localhost:27017/test';
-var mongoDB = 'mongodb://localhost:27017/users';
+var mongoDB = 'mongodb://localhost:27017/selfie_with_fame';
 
 mongoose.Promise = global.Promise;
 mongoose.connect(mongoDB,{ useNewUrlParser: true });

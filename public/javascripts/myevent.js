@@ -112,7 +112,15 @@ $(document).ready(function () {
                 let jsonData = toJSON(formData);
                 jsonData.startDate = new Date(jsonData.startDate);
                 jsonData.endDate = new Date(jsonData.endDate);
-                cacheNewMyEvent(jsonData, function () {form.submit()});
+                $.post("/myevent/new", jsonData).success( function (data) {
+                    console.log("Success!");
+                    cacheNewMyEvent(jsonData);
+                    //window.location.replace(window.location.origin + "/map");
+                }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("Failed to send");
+                    jsonData.isPosted = false;
+                    cacheNewMyEvent(jsonData);
+                });
             });
     });
 });
