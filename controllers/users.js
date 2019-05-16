@@ -2,10 +2,29 @@ var User = require('../models/user');
 var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
 
-exports.getUser = function () {
-   User.findOne({}, function(err, result) {
+exports.updateUser = function(req,res){
+    let username = req.cookies.session;
+    let user = req.body;
+    console.log(username);
+    console.log(user.new);
+    console.log(user.bio);
+
+    if (user.new == ""){
+        console.log("UPDATED");
+    }else{
+        let password = bcrypt.hashSync(user.new, salt);
+    }
+
+
+};
+
+exports.getUser = function (req,res) {
+    let username = req.cookies.session;
+   User.findOne({username: username}, function(err, result) {
         if (err) throw err;
         console.log(result.username);
+        console.log(result.bio);
+         res.render('settings',{username: JSON.stringify(result.username), bio: JSON.stringify(result.bio)});
     });
 };
 
