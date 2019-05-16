@@ -9,7 +9,6 @@ var storiesRouter = require('./routes/stories');
 var usersRouter = require('./routes/users');
 var myEventRouter = require('./routes/myevents');
 
-
 var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

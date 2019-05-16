@@ -81,4 +81,7 @@ router.get('/getuser', (req, res)=>{
     console.log(JSON.stringify(req.cookies));
 });
 
+router.get('/test', function (req,res){
+    res.render('test');
+});
 module.exports = router;
