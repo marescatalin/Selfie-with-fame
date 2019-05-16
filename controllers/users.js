@@ -58,11 +58,12 @@ exports.insert = function (req, res) {
             bio: userData.bio
         });
         console.log('received: ' + user);
+        res.clearCookie("session");
+        res.cookie("session", user.username, {maxAge: 3600000});
 
         user.save(function (err, results) {
             console.log(results._id);
-            res.clearCookie("session");
-            res.cookie("session", userData.username, {maxAge: 3600000});
+
             if (err)
                 res.status(500).send('Invalid data!');
 
