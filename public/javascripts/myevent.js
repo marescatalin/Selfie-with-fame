@@ -112,10 +112,10 @@ $(document).ready(function () {
                 let jsonData = toJSON(formData);
                 jsonData.startDate = new Date(jsonData.startDate);
                 jsonData.endDate = new Date(jsonData.endDate);
-                $.post("/myevent/new", jsonData).success( function (data) {
+                $.post("/myevent/new", jsonData, function (data) {
                     console.log("Success!");
                     cacheNewMyEvent(jsonData);
-                    //window.location.replace(window.location.origin + "/map");
+                    window.location.replace(window.location.origin + "/map");
                 }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
                     console.log("Failed to send");
                     jsonData.isPosted = false;
