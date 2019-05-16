@@ -1,3 +1,6 @@
+var rememberMe = false;
+var usernameSession = "";
+
 function checkLogin(login_is_correct,username){
     if (!login_is_correct) {
         document.getElementById("username").value = username;
@@ -33,6 +36,14 @@ $(document).ready(function () {
     }
     $('#check').click(function() {
         $(this).is(':checked') ? $('input[name=password]').attr('type', 'text') : $('input[name=password]').attr('type', 'password');
+        $(this).is(':checked') ? rememberMe = true : rememberMe = false;
+        console.log(rememberMe);
+    });
+
+    // rememberMe
+    $('#rememberMe').click(function() {
+        $(this).is(':checked') ? rememberMe = true : rememberMe = false;
+        console.log(rememberMe);
     });
 
     $('#signup-get').click(function () {
@@ -40,6 +51,9 @@ $(document).ready(function () {
     });
 
     $('#login').click(function () {
+        console.log(rememberMe);
+        if (rememberMe)
+            document.cookie = "permanentSession="+String(document.getElementById("username").value);
         $('#signin-form').submit();
     });
 
@@ -60,10 +74,11 @@ $(document).ready(function () {
         let form = $(this).parents('form');
         let formData = form.serializeArray();
         let user = toJSON(formData);
-
+        //
         localStorage.setItem("currentUser", user.username);
-        storeCachedData(user, function () {
-            form.submit()
-        });
+        form.submit()
+        // storeCachedData(user, function () {
+        //     form.submit()
+        // });
     });
 })

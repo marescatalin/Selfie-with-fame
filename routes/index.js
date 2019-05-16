@@ -32,13 +32,9 @@ initDB.init();
 // user.getUser();
 
 
-
 /* GET home page. */
-router.post('/map', function(req,res) {
-    if(user.query(req,res))
-        res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
-    else
-        res.render('index', {title: 'Express', username: JSON.stringify(req.body.username), login_is_correct: false});
+router.post('/map',async function(req,res) {
+    user.query(req, res);
 });
 
 router.get('/map', function(req,res,next) {
@@ -46,10 +42,10 @@ router.get('/map', function(req,res,next) {
 });
 
 router.get('/', function(req, res, next) {
-    if (login){
-        res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
-    }else{
+    if (req.cookies.permanentSession == undefined && req.cookies.session == undefined ){
         res.render('index', {title: 'Express', username: "", login_is_correct: true});
+    }else{
+        res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
     }
 
 });
@@ -58,11 +54,30 @@ router.get('/signup', function(req, res, next) {
     res.render('signup', {title: 'Express'});
 });
 
+router.get('/logout', function(req, res, next) {
+    res.clearCookie("session");
+    res.clearCookie("permanentSession");
+    res.render('index', {title: 'Express', username: "", login_is_correct: true});
+});
+
 router.post('/signup', function (req, res) {
     user.insert(req,res);
     res.redirect('/map');
 });
 
+//JSON object to be added to cookie
+// {"session": username}
 
+//Route for adding cookie
+// router.get('/setuser', (req, res)=>{
+//     res.cookie("userData", userss, {maxAge: 10000});
+//     res.send('user data added to cookie');
+// });
+
+//Iterate users data from cookie
+router.get('/getuser', (req, res)=>{
+//shows all the cookies
+    console.log(JSON.stringify(req.cookies));
+});
 
 module.exports = router;
