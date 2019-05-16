@@ -10,6 +10,11 @@ exports.updateUser = function(req,res){
     console.log(user.bio);
 
     if (user.new == ""){
+        User.updateOne({"username" : username}, {$set: {"bio": user.bio}}, function (err, result) {
+            if(result) {
+                console.log("New User" + result);
+            }
+        });
         console.log("UPDATED");
     }else{
         let password = bcrypt.hashSync(user.new, salt);

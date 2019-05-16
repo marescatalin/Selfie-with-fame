@@ -1,5 +1,6 @@
 let MyEvent = require('../models/myevent');
 let User = require('../models/user');
+var fs = require('fs');
 
 // Post new story
 exports.new = function (req, res) {
@@ -16,7 +17,8 @@ exports.new = function (req, res) {
             User.findOne({username: username}, function (err, user) {
                 if(user) {
                     console.log(user);
-                    var myEvent = new MyEvent({
+                    let picturePaths = savePictures(postData.pictures, user._id);
+                    let myEvent = new MyEvent({
                         myEventName: postData.name,
                         description: postData.description,
                         location: {
@@ -29,16 +31,17 @@ exports.new = function (req, res) {
                         endDate: postData.endDate,
                         address: postData.address,
                         postCode: postData.postCode,
+                        pictures: picturePaths,
                         author: user._id
                     });
                     console.log("Received " + myEvent);
 
                     myEvent.save(function (err, results) {
                         if (err) {
-                            console.log(err)
+                            console.log(err);
                             res.status(500).send("Invalid data!")
                         } else {
-                            console.log("Result is ", results)
+                            console.log("Result is ", results);
                             res.setHeader('Content-Type', 'application/json');
                             res.send(JSON.stringify(myEvent));
                         }
@@ -54,19 +57,20 @@ exports.new = function (req, res) {
 let savePictures = function (pictures, userId) {
     let targetDirectory = './private/images/' + userId + '/';
     if (!fs.existsSync(targetDirectory)) {
-        fs.mkdirSync(targetDirectory);
+        fs.mkdirSync(targetDirectory,  {recursive: true}, err => {});
     }
     let currentTime = new Date().getTime();
     console.log('saving pictures to ' + targetDirectory + currentTime);
 
+    let picturePaths = [];
     pictures.forEach(function (picture, index) {
         // strip off the data: url prefix to get just the base64-encoded bytes
-        let imageBlob = picture.replace(/^data:image\/\w+;base64,/,
-            "");
+        let imageBlob = picture.replace(/^data:image\/\w+;base64,/, "");
         let buf = new Buffer(imageBlob, 'base64');
-        fs.writeFile(targetDirectory + currentTime + index +  '.png', buf);
-
-        var filePath = targetDirectory + currentTime + index;
+        let filePath = targetDirectory + currentTime + index + '.png';
+        fs.writeFile(filePath, buf, (err) => {console.log(err)});
+        picturePaths.push(filePath);
         console.log('file saved!');
     });
+    return picturePaths
 };
