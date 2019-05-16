@@ -55,11 +55,30 @@ router.get('/signup', function(req, res, next) {
     res.render('signup', {title: 'Express'});
 });
 
+router.get('/logout', function(req, res, next) {
+    res.clearCookie("session");
+    res.clearCookie("permanentSession");
+    res.render('index', {title: 'Express', username: "", login_is_correct: true});
+});
+
 router.post('/signup', function (req, res) {
     user.insert(req,res);
     res.redirect('/map');
 });
 
+//JSON object to be added to cookie
+// {"session": username}
 
+//Route for adding cookie
+// router.get('/setuser', (req, res)=>{
+//     res.cookie("userData", userss, {maxAge: 10000});
+//     res.send('user data added to cookie');
+// });
+
+//Iterate users data from cookie
+router.get('/getuser', (req, res)=>{
+//shows all the cookies
+    console.log(JSON.stringify(req.cookies));
+});
 
 module.exports = router;

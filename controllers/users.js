@@ -29,6 +29,8 @@ exports.query = function (req, res) {
             } else if (user.username === req.body.username) {
                 if (bcrypt.compareSync(userData.password, user.password))
                 {
+                    res.clearCookie("session");
+                    res.cookie("session", userData.username, {maxAge: 3600000});
                     res.redirect('map');
                 }else{
                     res.render('index', {title: 'Express', username: JSON.stringify(req.body.username), login_is_correct: false});
@@ -59,6 +61,8 @@ exports.insert = function (req, res) {
 
         user.save(function (err, results) {
             console.log(results._id);
+            res.clearCookie("session");
+            res.cookie("session", userData.username, {maxAge: 3600000});
             if (err)
                 res.status(500).send('Invalid data!');
 
