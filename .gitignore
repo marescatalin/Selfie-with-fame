@@ -1,4 +1,5 @@
 .idea/
+private/
 logs
 *.log
 npm-debug.log*

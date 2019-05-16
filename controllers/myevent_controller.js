@@ -1,10 +1,76 @@
 let MyEvent = require('../models/myevent');
+let User = require('../models/user');
+var fs = require('fs');
 
 // Post new story
 exports.new = function (req, res) {
     let postData = req.body;
-    let myEvent = new MyEvent();
-    myEvent.name = postData.name;
-    myEvent.description = postData.description;
-    console.log(myEvent);
+    if (postData == null) {
+        res.status(403).send('No data sent!')
+    }
+    console.log(postData);
+    try {
+        let username = req.cookies.session;
+        let permUsername = req.cookies.permanentSession;
+        if(username || permUsername) {
+            username = username ? username : permUsername;
+            User.findOne({username: username}, function (err, user) {
+                if(user) {
+                    console.log(user);
+                    let picturePaths = savePictures(postData.pictures, user._id);
+                    let myEvent = new MyEvent({
+                        myEventName: postData.name,
+                        description: postData.description,
+                        location: {
+                            lat: postData.location.lat,
+                            lng: postData.location.lng,
+                            address: postData.address,
+                            postcode: postData.postcode
+                        },
+                        startDate: postData.startDate,
+                        endDate: postData.endDate,
+                        address: postData.address,
+                        postCode: postData.postCode,
+                        pictures: picturePaths,
+                        author: user._id
+                    });
+                    console.log("Received " + myEvent);
+
+                    myEvent.save(function (err, results) {
+                        if (err) {
+                            console.log(err);
+                            res.status(500).send("Invalid data!")
+                        } else {
+                            console.log("Result is ", results);
+                            res.setHeader('Content-Type', 'application/json');
+                            res.send(JSON.stringify(myEvent));
+                        }
+                    })
+                }
+            })
+        }
+    } catch (e) {
+        res.status(500).send("error " + e);
+    }
+};
+
+let savePictures = function (pictures, userId) {
+    let targetDirectory = './private/images/' + userId + '/';
+    if (!fs.existsSync(targetDirectory)) {
+        fs.mkdirSync(targetDirectory,  {recursive: true}, err => {});
+    }
+    let currentTime = new Date().getTime();
+    console.log('saving pictures to ' + targetDirectory + currentTime);
+
+    let picturePaths = [];
+    pictures.forEach(function (picture, index) {
+        // strip off the data: url prefix to get just the base64-encoded bytes
+        let imageBlob = picture.replace(/^data:image\/\w+;base64,/, "");
+        let buf = new Buffer(imageBlob, 'base64');
+        let filePath = targetDirectory + currentTime + index + '.png';
+        fs.writeFile(filePath, buf, (err) => {console.log(err)});
+        picturePaths.push(filePath);
+        console.log('file saved!');
+    });
+    return picturePaths
 };

@@ -8,7 +8,7 @@ var app = require('../app');
 var debug = require('debug')('intelligent-web:server');
 var https = require('https');
 var fs = require('fs-extra');
-var database= require('../databases/users');
+var database= require('../databases/selfie_with_fame_db');
 
 
 /**

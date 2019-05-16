@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var Users = require('../models/user');
 
 var login = false;
 
@@ -38,8 +37,16 @@ router.post('/map',async function(req,res) {
     user.query(req, res);
 });
 
+router.get('/settings', function(req,res,next) {
+    user.getUser(req,res)
+});
+
 router.get('/map', function(req,res,next) {
-  res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+    res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+});
+
+router.post('/editaccount', function(req,res,next) {
+    user.updateUser(req,res);
 });
 
 router.get('/', function(req, res, next) {

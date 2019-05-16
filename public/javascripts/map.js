@@ -239,6 +239,12 @@ function displayMap(loc, curr_events) {
     });
 }
 
+// function ajaxGet(url) {
+//     $.get(url, function (data) {
+//         return data;
+//     });
+// }
+
 
 $(document).ready(function () {
     if ('serviceWorker' in navigator) {
