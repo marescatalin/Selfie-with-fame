@@ -1,0 +1,30 @@
+#sendButton{
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    width: 350px;
+    height: 30px;
+}
+
+#text{
+    color: black;
+    font-size: 20px;
+}
+
+#sndButton{
+    color: black;
+    font-size: 20px;
+}
+
+messages{
+    font-size: 15px;
+    position:relative;
+    background-color:grey;
+    padding: 12px;
+    border-radius: 5px;
+    border-color: grey;
+}
+
+#chat{
+    text-align: center;
+}

@@ -88,7 +88,7 @@ router.get('/getuser', (req, res)=>{
     console.log(JSON.stringify(req.cookies));
 });
 
-router.get('/test', function (req,res){
-    res.render('test');
+router.get('/chatroom', function (req,res){
+    res.render('chatroom');
 });
 module.exports = router;

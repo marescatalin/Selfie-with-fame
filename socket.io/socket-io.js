@@ -1,12 +1,11 @@
 
 exports.init = function (io, app) {
     io.on('connection', function (socket) {
-        socket.on('joining',function(user,roomId){
+        socket.on('joining',function(user){
             console.log('connected');
-            socket.emit('updatechat',user + ' has joined this room', roomId);
+            socket.emit('joinroom',user + ' has joined the room');
             socket.on('create', function (room) {
                 socket.join(room);
-                console.log(socket);
                 socket.on('sendchat', function (data) {
                     io.sockets.in(room).emit('updatechat',user,data);
                 });
