@@ -71,6 +71,7 @@ exports.getUser = function (req,res) {
     }
    User.findOne({username: username}, function(err, result) {
         if (err) throw err;
+        if(result)
          res.render('settings',{username: JSON.stringify(result.username), bio: JSON.stringify(result.bio),notMatch: false,passwordChanged: false});
     });
 };

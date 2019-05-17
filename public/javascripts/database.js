@@ -124,6 +124,28 @@ function storeCachedData(user, resolve) {
     }
 }
 
+function clearCache(store_name, resolve, reject) {
+    console.log("Clearning " + store_name + " cache");
+    if(dbPromise) {
+        dbPromise.then(async db => {
+            var tx = db.transaction(store_name, 'readwrite');
+            var store = tx.objectStore(store_name);
+            await store.clear();
+            return tx.complete;
+        }).then(function () {
+            console.log('cleared ' + store_name + ' cache');
+            if (resolve) {
+                resolve();
+            }
+        }).catch(function (error) {
+            localStorage.setItem("Error", error);
+            if (reject) {
+                reject(error);
+            }
+        });
+    }
+}
+
 async function getLoginData(user) {
     if (dbPromise) {
         return dbPromise.then(function (db) {

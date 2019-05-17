@@ -9,4 +9,6 @@ router.get('/new', function (req, res) {
 
 router.post('/new', storyController.new);
 
+router.get('/:myEventId', (req, res) => storyController.getMyEventStories(req, res));
+
 module.exports = router;

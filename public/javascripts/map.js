@@ -4,7 +4,7 @@ function getCookie(name) {
     if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
-function initialize() {
+async function initialize() {
         if (getCookie("session") == undefined)
             document.getElementById("user").innerHTML =
                 getCookie("permanentSession");
@@ -14,10 +14,10 @@ function initialize() {
 
     geocoder = new google.maps.Geocoder();
 
-    getLocation()
+    await getLocation()
         .then(function (loc) {
             if (loc) {
-                displayMap(loc, myEvents);
+                map = displayMap(loc, myEvents);
             } else {
                 console.log("Geolocation is not supported by this browser.");
             }
@@ -99,8 +99,8 @@ function update_map() {
 
 function eventInformationHtml(myEvent) {
     return "<p>Description: " + myEvent.description + "</p>" +
-        "<p>Address: " + myEvent.address + "</p>" +
-        "<p>Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") + "</p>" +
+        "<p>Address: " + myEvent.location.address + "</p>" +
+        "<p>Date: " + new Date(myEvent.startDate).toLocaleString('gb') + " - " + new Date(myEvent.endDate).toLocaleString('gb') + "</p>" +
         "<p>Author: " + myEvent.author + "</p>" +
         "<p>Keywords: " + myEvent.keywords + "</p>" +
         "<button onClick=\"window.location='/chatroom'\" + data-myeventid=\"" + myEvent.id + "\" type=\"button\" class=\"btn btn-dark\">Chat</button>";
@@ -131,7 +131,7 @@ function createStoryHtml(story) {
         "  <div class=\"card-body\">\n" +
         "    <blockquote class=\"blockquote mb-0\">\n" +
         "      <p>" + story.message + "</p>\n" +
-        "      <footer class=\"blockquote-footer\">" + story.author + "</footer>\n" +
+        "      <footer class=\"blockquote-footer\">" + story.author + " at " + new Date(story.createdAt).toLocaleString('gb') + "</footer>\n" +
         "    </blockquote>\n" +
         "  </div>\n" +
         "</div>"
@@ -139,15 +139,16 @@ function createStoryHtml(story) {
 
 function updateMyEventModal(myEvent) {
     let myEventModal = $('#myEventModal');
-    myEventModal.find('.modal-title').text(myEvent.name);
+    myEventModal.find('.modal-title').text(myEvent.myEventName);
     myEventModal.find('.modal-body').html(eventInformationHtml(myEvent));
-    $('#new-story-form').find('button').val(myEvent.id);
+    $('#new-story-form').find('button').val(myEvent._id);
     if (myEvent.pictures && myEvent.pictures.length > 0) {
         $('#myevent-profile-picture').html("<img class=\"img-fluid\" src=" + myEvent.pictures.pop() + " alt=\"event picture\">");
         let picturesAccordion = $('#myEventPicturesAccordion');
         if (myEvent.pictures.length > 0) {
             picturesAccordion.show();
             let picturesDiv = picturesAccordion.find('.list-group');
+            picturesDiv.html("");
             myEvent.pictures.forEach(pictureData => {
                 picturesDiv.append(createPictureHTML(pictureData));
             });
@@ -155,17 +156,27 @@ function updateMyEventModal(myEvent) {
             picturesAccordion.hide();
         }
     }
-    let stories = getCachedMyEventStories(myEvent.id);
-    stories.then(function (stories) {
-        let storyDiv = $('#story-div');
-        if (stories.length === 0) {
-            storyDiv.append("<p>Looks like there are no stories for this event yet</p>");
-        } else {
-            stories.forEach(story => {
-                storyDiv.append(createStoryHtml(story));
-            })
+
+    $.get('/story/' + myEvent._id, function (stories) {
+        if(stories) {
+            addStoriesToResults(stories);
         }
-    })
+    }).fail( function (err) {
+        let cacheStories = getCachedMyEventStories(myEvent._id);
+        cacheStories.then(function (stories) {
+            addStoriesToResults(stories)
+        })
+    });
+}
+function addStoriesToResults(stories) {
+    let storyDiv = $('#story-div');
+    if (stories.length === 0) {
+        storyDiv.append("<p>Looks like there are no stories for this event yet</p>");
+    } else {
+        stories.forEach(story => {
+            storyDiv.append(createStoryHtml(story));
+        })
+    }
 }
 
 function expandEvent(btn) {
@@ -175,7 +186,9 @@ function expandEvent(btn) {
         url: "/myevent/" + myEventId,
         dataType: 'json',
         success: function (data) {
-            console.log("Success!");
+            let myEvent = data;
+            console.log(myEvent);
+            updateMyEventModal(myEvent);
         },
         error: function (e) {
             console.log("Failed");
@@ -200,11 +213,11 @@ function myEventCardHtml(myEvent) {
         "    </div>\n" +
         "    <div class=\"col-md-8\">\n" +
         "      <div class=\"card-body\">\n" +
-        "        <h5 class=\"card-title\">" + myEvent.name + "</h5>\n" +
+        "        <h5 class=\"card-title\">" + myEvent.myEventName + "</h5>\n" +
         "        <p class=\"card-text\">" + myEvent.description + "</p>\n" +
-        "        <p class=\"card-text\">Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") + "</p>\n" +
+        "        <p class=\"card-text\">Date: " + new Date(myEvent.startDate).toLocaleString('gb') + " - " + new Date(myEvent.endDate).toLocaleString('gb') + "</p>\n" +
         "        <button onclick=\"expandEvent(this)\" type=\"button\" class=\"btn btn-dark\" " +
-        "                data-myeventid=\"" + myEvent.id + "\" data-toggle=\"modal\" data-target=\"#myEventModal\">Expand</button>" +
+        "                data-myeventid=\"" + myEvent._id + "\" data-toggle=\"modal\" data-target=\"#myEventModal\">Expand</button>" +
         "      </div>\n" +
         "    </div>\n" +
         "  </div>\n" +
@@ -225,34 +238,39 @@ function displayMap(loc, curr_events) {
         zoom: 15,
         center: {lat: myLat, lng: myLng}
     };
-    let map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);// To add the marker to the map, use the 'map' property
+    return new google.maps.Map(document.getElementById("map-canvas"), mapOptions);// To add the marker to the map, use the 'map' property
 
-    curr_events.forEach(function (myEvent) {
-        let marker = new google.maps.Marker({
-            title: myEvent.name,
-            position: {lat: myEvent.location.lat, lng: myEvent.location.lng},
-            map: map
-        });
+    // curr_events.forEach(function (myEvent) {
+    //     addMyEventToMap(myEvent);
+    // });
+}
 
-        let infoWindow = new google.maps.InfoWindow({
-            content: myEventCardHtml(myEvent),
-            maxWidth: 400
-        });
+function addMyEventToMap(myEvent) {
+    let marker = new google.maps.Marker({
+        title: myEvent.myEventName,
+        position: {lat: parseFloat(myEvent.location.lat), lng: parseFloat(myEvent.location.lng)},
+        map: map
+    });
+    console.log( {lat: parseFloat(myEvent.location.lat), lng: parseFloat(myEvent.location.lng)});
 
-        marker.addListener('click', function () {
-            infoWindow.open(marker.get('map'), marker);
-        });
+    let infoWindow = new google.maps.InfoWindow({
+        content: myEventCardHtml(myEvent),
+        maxWidth: 400
+    });
+
+    marker.addListener('click', function () {
+        infoWindow.open(marker.get('map'), marker);
     });
 }
 
-// function ajaxGet(url) {
-//     $.get(url, function (data) {
-//         return data;
-//     });
-// }
+function updateCache(myEvents) {
 
+}
 
-$(document).ready(function () {
+var myEvents = [];
+var map;
+
+$(document).ready(async function () {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
             .register('./service-worker.js')
@@ -270,16 +288,24 @@ $(document).ready(function () {
         console.log('This browser doesn\'t support IndexedDB');
     }
 
+    await initialize();
+    console.log("map init to " + map);
+
     $("#event-search-button").click(update_map);
 
-    myEvents = [];
-
-    let myCachedEvents = getCachedMyEvents();
-    myCachedEvents.then(function (myEventList) {
-        myEvents = myEvents.concat(myEventList);
-        console.log("Retrieved events", myEvents);
-        initialize();
-    })
+    $.get("/myevent/all", async function (data) {
+        if(data) {
+            console.log(data);
+            myEvents.push(data);
+            await clearCache(MYEVENT_STORE_NAME);
+            data.forEach(myEvent => {
+                cacheNewMyEvent(myEvent);
+                addMyEventToMap(myEvent);
+            })
+        }
+    }).fail(function () {
+        myEvents = getCachedMyEvents();
+    });
 
     $('#myEventModal').on('hidden.bs.modal', function () {
         $('#story-div').html("");
@@ -289,6 +315,4 @@ $(document).ready(function () {
         $(location).attr('href', '/myevent/new');
     });
 });
-
-google.maps.event.addDomListener(window, 'load', initialize);
 
