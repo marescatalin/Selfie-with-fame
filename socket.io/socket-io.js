@@ -1,15 +1,20 @@
 
 exports.init = function (io, app) {
     io.on('connection', function (socket) {
-        socket.on('joining',function(userId,roomId){
+        socket.on('joining',function(user,roomId){
             console.log('connected');
-            //socket.join(room);
-            socket.emit('updatechat',userId + ' has joined this room', roomId);});
+            socket.emit('updatechat',user + ' has joined this room', roomId);
+            socket.on('create', function (room) {
+                socket.join(room);
+                console.log(socket);
+                socket.on('sendchat', function (data) {
+                    io.sockets.in(room).emit('updatechat',user,data);
+                });
+            });
+
+        });
         socket.on('disconnect', function () {
             console.log('disconnect');
-        });
-        socket.on('sendchat', function (data) {
-            io.sockets.emit('updatechat',"123",data);
         });
     });
 };

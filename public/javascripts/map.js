@@ -5,8 +5,12 @@ function getCookie(name) {
 }
 
 async function initialize() {
-    document.getElementById("user").innerHTML =
-         getCookie("session");
+        if (getCookie("session") == undefined)
+            document.getElementById("user").innerHTML =
+                getCookie("permanentSession");
+        else
+            document.getElementById("user").innerHTML =
+                 getCookie("session");
 
     geocoder = new google.maps.Geocoder();
 
@@ -98,7 +102,9 @@ function eventInformationHtml(myEvent) {
         "<p>Address: " + myEvent.location.address + "</p>" +
         "<p>Date: " + new Date(myEvent.startDate).toLocaleString('gb') + " - " + new Date(myEvent.endDate).toLocaleString('gb') + "</p>" +
         "<p>Author: " + myEvent.author + "</p>" +
-        "<p>Keywords: " + myEvent.keywords + "</p>";
+        "<p>Keywords: " + myEvent.keywords + "</p>" +
+        "<button onClick=\"window.location='/test'\" type=\"button\" class=\"btn btn-dark\">Chat</button>";
+
 
 }
 
