@@ -173,6 +173,7 @@ function addStoriesToResults(stories) {
     if (stories.length === 0) {
         storyDiv.append("<p>Looks like there are no stories for this event yet</p>");
     } else {
+        storyDiv.html("");
         stories.forEach(story => {
             storyDiv.append(createStoryHtml(story));
         })
