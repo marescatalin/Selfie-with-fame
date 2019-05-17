@@ -5,8 +5,12 @@ function getCookie(name) {
 }
 
 function initialize() {
-        document.getElementById("user").innerHTML =
-             getCookie("session");
+        if (getCookie("session") == undefined)
+            document.getElementById("user").innerHTML =
+                getCookie("permanentSession");
+        else
+            document.getElementById("user").innerHTML =
+                 getCookie("session");
 
     geocoder = new google.maps.Geocoder();
 

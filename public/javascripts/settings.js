@@ -9,22 +9,56 @@ function openForm() {
 
 }
 
-function closeForm(username,bio) {
-    console.log(username);
-    console.log(bio);
-    console.log("sjdajksdas");
-    document.getElementById("username").value = username;
-    document.getElementById("bio").value = bio;
-    document.getElementById("myForm").style.display = "none";
+function closeForm(username,bio,notMatch,passwordChanged) {
+    if (notMatch){
+        document.getElementById("username").value = username;
+        document.getElementById("bio").value = bio;
+        document.getElementById("changePassword").innerText= "Change password";
+        document.getElementById("myForm").style.display = "block";
+        alert("Current password was incorrect!");
+    } if (passwordChanged){
+        document.getElementById("username").value = username;
+        document.getElementById("bio").value = bio;
+        document.getElementById("changePassword").innerText= "Change password";
+        document.getElementById("myForm").style.display = "none";
+        alert("Password changed successfully!");
+    }else{
+        document.getElementById("username").value = username;
+        document.getElementById("bio").value = bio;
+        document.getElementById("myForm").style.display = "none";
+    }
+
+
+
+}
+
+function checkPasswordMatch() {
+    let newPassword = document.getElementById("new").value;
+    let reNewPassword = document.getElementById("retypenew").value;
+    if (newPassword != reNewPassword){
+        alert("Passwords do not match!");
+        document.getElementById("new").value = "";
+        document.getElementById("retypenew").value = "";
+        return false;
+    }else{
+        return true;
+    }
+
 }
 
 $(document).ready(function () {
     $('#change').click(function () {
-        $('#accountForm').submit();
+        if(checkPasswordMatch())
+            $('#accountForm').submit();
     });
 
     $('#save').click(function () {
-        $('#accountForm').submit();
+        if(checkPasswordMatch())
+            $('#accountForm').submit();
+    });
+
+    $('#map-get').click(function () {
+        $('#map-form').submit();
     });
 
 });
