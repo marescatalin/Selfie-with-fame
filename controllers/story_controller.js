@@ -3,6 +3,7 @@ let User = require('../models/user');
 let ControllerHelpers = require('../helpers/controller_helpers');
 let mongoose = require('mongoose');
 
+// get the stories for one event
 exports.getMyEventStories = function (req, res) {
     let myEventId = req.params.myEventId;
     console.log(myEventId);

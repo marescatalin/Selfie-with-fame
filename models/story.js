@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
+// model for the story table
 var Story = new Schema(
     {
         title: {type:String},

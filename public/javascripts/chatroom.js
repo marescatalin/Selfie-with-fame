@@ -1,5 +1,6 @@
 var socket = io();
 
+// sends the text to the chat room
 function sendText() {
     var input = document.getElementById('text');
     var text = input.value;
@@ -10,6 +11,7 @@ function sendText() {
     return false;
 }
 
+// updates the chat
 socket.on('updatechat', function (who,text){
     var div1 = document.getElementById('chat');
     var div2 = document.createElement('messages');
@@ -20,6 +22,7 @@ socket.on('updatechat', function (who,text){
     div1.appendChild(div2);
 });
 
+// allows a user to join a room
 socket.on('joinroom', function (who){
     var div1 = document.getElementById('chat');
     var div2 = document.createElement('messages');
@@ -30,6 +33,7 @@ socket.on('joinroom', function (who){
     div1.appendChild(div2);
 });
 
+// joins the room when the document finishes loading
 document.addEventListener('DOMContentLoaded', function(event) {
     let username = getCookie("session");
     if(username === "") {
@@ -39,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     socket.emit('create', 'event');
 });
 
+// gets the user information from the cookies
 function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);

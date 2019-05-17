@@ -55,6 +55,7 @@ function initDatabase (){
     return dbPromise;
 }
 
+// inits the stores
 function initStores(upgradeDb, store) {
     switch (store) {
         case STORY_STORE_NAME:
@@ -96,7 +97,7 @@ function initMyEventStore(upgradeDb) {
 }
 
 
-
+// inits user events store
 function initUserEventStore(upgradeDb){
     let userStore = upgradeDb.createObjectStore(USER_STORE_NAME, {keyPath: 'id', autoIncrement: true});
     userStore.createIndex('username', 'username', {unique: true});
@@ -104,6 +105,7 @@ function initUserEventStore(upgradeDb){
     userStore.createIndex('bio', 'bio', {unique: false});
 }
 
+// caches user data
 function storeCachedData(user, resolve) {
     console.log('inserting: '+JSON.stringify(user));
     if (dbPromise) {
@@ -124,6 +126,7 @@ function storeCachedData(user, resolve) {
     }
 }
 
+// clears cache
 function clearCache(store_name, resolve, reject) {
     console.log("Clearning " + store_name + " cache");
     if(dbPromise) {
@@ -146,6 +149,7 @@ function clearCache(store_name, resolve, reject) {
     }
 }
 
+// gets login data
 async function getLoginData(user) {
     if (dbPromise) {
         return dbPromise.then(function (db) {
@@ -165,6 +169,7 @@ async function getLoginData(user) {
 
 }
 
+// caches story
 function cacheNewStory(story, resolve, reject) {
     console.log('inserting: ' + JSON.stringify(story));
     if (dbPromise) {
@@ -187,7 +192,7 @@ function cacheNewStory(story, resolve, reject) {
     }
 }
 
-
+// caches event
 function cacheNewMyEvent(myEvent, resolve, reject) {
     console.log('inserting: ' + JSON.stringify(myEvent));
     if (dbPromise) {
@@ -210,6 +215,7 @@ function cacheNewMyEvent(myEvent, resolve, reject) {
     }
 }
 
+// retrieves cached events
 async function getCachedMyEvents() {
     if (dbPromise) {
         return dbPromise.then(function (db) {
@@ -227,6 +233,7 @@ async function getCachedMyEvents() {
     }
 }
 
+// retrieves stories for event
 async function getCachedMyEventStories(myEventId) {
     if (dbPromise) {
         return dbPromise.then(function (db) {
@@ -246,6 +253,7 @@ async function getCachedMyEventStories(myEventId) {
     }
 }
 
+// retrieves events
 async function getCachedMyEvent(id) {
     if (dbPromise) {
         return dbPromise.then(function (db) {

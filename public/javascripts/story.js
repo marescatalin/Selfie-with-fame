@@ -23,6 +23,7 @@ function handleError(error) {
     console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
 }
 
+//
 function setupPictureRemoval() {
     if (!!('ontouchstart' in window)) {
         $('.image-list-item').click(function (e) {

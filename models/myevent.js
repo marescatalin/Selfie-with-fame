@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
 
+// model for the events table
 var MyEvent = new Schema(
     {
         myEventName: {type:String},

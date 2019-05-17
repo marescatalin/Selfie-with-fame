@@ -2,6 +2,7 @@ var User = require('../models/user');
 var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
 
+// update user info
 exports.updateUser = function(req,res){
     let username;
     if (req.cookies.permanentSession == undefined && req.cookies.session == undefined ){
@@ -13,7 +14,6 @@ exports.updateUser = function(req,res){
         username = req.cookies.permanentSession;
     }
 
-     //guyguyg
     console.log(username);
     let user = req.body;
 
@@ -58,7 +58,7 @@ exports.updateUser = function(req,res){
 
 };
 
-
+// get a user
 exports.getUser = function (req,res) {
     let username;
     if (req.cookies.permanentSession == undefined && req.cookies.session == undefined ){

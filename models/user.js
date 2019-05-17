@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+// schema for users table
 var User = new Schema(
     {
         username: {type: String, required: true, max: 100},

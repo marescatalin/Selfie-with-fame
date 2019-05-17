@@ -1,6 +1,7 @@
 var rememberMe = false;
 var usernameSession = "";
 
+// checks that user is logged in
 function checkLogin(login_is_correct,username){
     if (!login_is_correct) {
         document.getElementById("username").value = username;
@@ -16,7 +17,7 @@ function toJSON(serializedArray) {
     return data;
 }
 
-
+// prepares the service worker
 $(document).ready(function () {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker

@@ -13,6 +13,7 @@ exports.all = function (res) {
   });
 };
 
+// Get one event
 exports.getMyEvent = function (req, res) {
     let eventId = req.params.myEventId;
     MyEvent.findOne({"_id": eventId}, function (err, result) {
