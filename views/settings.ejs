@@ -15,11 +15,10 @@
     <script src="javascripts/bootstrap.min.js"></script>
     <script src="javascripts/idb.js"></script>
     <script src="javascripts/database.js"></script>
-    <script src="javascripts/index.js"></script>
     <script src="javascripts/settings.js"></script>
 
 </head>
-<body onload="closeForm(<%=username%> , <%=bio%>)">
+<body onload="closeForm(<%=username%> , <%=bio%>, <%=notMatch%>, <%=passwordChanged%>)">
 <div class="container">
     <div class="d-flex justify-content-center bg">
             <form id='accountForm' action="/editaccount" method="POST">
@@ -38,7 +37,7 @@
 
                             <div class="form-group">
                                 <label for="old password">Current</label>
-                                <input type="password" class="form-control" name="current" id="current">
+                                <input type="password" class="form-control" name="currentPassword" id="currentPassword">
                             </div>
 
                             <div class="form-group">
@@ -67,10 +66,18 @@
                         Save
                     </button>
                 </div>
+                    <br>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" id="map-get" class="btn btn-primary">
+                            Go back
+                        </button>
+                    </div>
             </form>
         </div>
     </div>
-</div>
+
+
+<form id="map-form" method="GET" action="/map" hidden></form>
 
 
 </body>

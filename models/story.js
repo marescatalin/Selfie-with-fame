@@ -1,22 +1,21 @@
 "use strict";
 
-class Story {
-    constructor(title, message, date, pictures, myEvent, author) {
-        this.title = title;
-        this.message = message;
-        this.date = date;
-        this.pictures = pictures;
-        this.myEvent = myEvent;
-        this.author = author
-    }
+var mongoose = require('mongoose');
 
-    set name(name) {
-        this._name = name.charAt(0).toUpperCase() + name.slice(1);
-    }
+var Schema = mongoose.Schema;
 
-    get name() {
-        return this._name;
+var Story = new Schema(
+    {
+        title: {type:String},
+        message: {type:String},
+        createdAt: {type:Date},
+        pictures: {type:Array},
+        author: {type:String},
+        myEvent: {type:Schema.ObjectId}
     }
-}
+);
 
-module.exports = Story;
+var storyModel = mongoose.model('Story', Story);
+
+
+module.exports = storyModel;

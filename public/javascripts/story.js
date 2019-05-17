@@ -109,12 +109,21 @@ function sendAjaxRequest(url, data) {
         url: url,
         dataType: 'json',
         data: data,
-        success: function (data) {
+        success: function () {
             console.log("Success!");
+            let storyJSON = toJSON(data);
+            cacheNewStory(storyJSON, function () {
+                window.location.replace(window.location.origin + "/map");
+            });
         },
         fail: function (e) {
             console.log("Failed");
             console.log("Storing data in IndexedDB...");
+            let storyJSON = toJSON(data);
+            storyJSON.isSaved = false;
+            cacheNewStory(storyJSON, function () {
+                window.location.replace(window.location.origin + "/map");
+            });
         }
     });
 }
@@ -128,14 +137,13 @@ function submitPost() {
     });
     story.push({name: 'pictures', value: pictures});
     story.push({name: 'myevent', value: $('#story-submit').val()});
-    story.push({name: 'author', value: localStorage.getItem("currentUser")});
+    let username = getCookie("session");
+    if(username === "") {
+        username = getCookie('permanentSession')
+    }
+    story.push({name: 'author', value:username});
+    story.push({name: 'createdAt', value:Date.now()})
     sendAjaxRequest("/story/new", story);
-    let storyJSON = toJSON(story);
-    console.log(story);
-    console.log(storyJSON);
-    cacheNewStory(storyJSON, function () {
-        postForm.submit();
-    });
 }
 
 $(document).ready(function () {
@@ -176,3 +184,19 @@ $(document).ready(function () {
 
     setupPictureRemoval();
 });
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}

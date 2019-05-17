@@ -101,7 +101,8 @@ router.get('/private/images/:userId/:pictureId', function (req, res) {
                         throw err;
                     }
                     let img = base64_encode(data);
-                    res.send(JSON.stringify(img));
+                    res.writeHead(200, {'Content-Type': 'image/gif' });
+                    res.end(data, 'binary');
                 })
             }
         })

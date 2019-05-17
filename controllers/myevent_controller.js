@@ -1,22 +1,27 @@
 let MyEvent = require('../models/myevent');
 let User = require('../models/user');
-var fs = require('fs');
+let fs = require('fs');
+let ControllerHelpers = require('../helpers/controller_helpers');
 
 // Get all myEvents
 exports.all = function (res) {
   let myEvents = MyEvent.find({}, function (err, results) {
       if(results) {
-          results.forEach(result => {
-              let pictureURIs = []
-              result.pictures.forEach(picture => {
-                  let pictureURI = fs.open
-              })
-          })
           res.setHeader('Content-Type', 'application/json');
           res.send(JSON.stringify(results));
       }
   });
 };
+
+exports.getMyEvent = function (req, res) {
+    let eventId = req.params.myEventId;
+    MyEvent.findOne({"_id": eventId}, function (err, result) {
+        if(result) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(result));
+        }
+    })
+}
 
 // Post new story
 exports.new = function (req, res) {
@@ -24,7 +29,6 @@ exports.new = function (req, res) {
     if (postData == null) {
         res.status(403).send('No data sent!')
     }
-    console.log(postData);
     try {
         let username = req.cookies.session;
         let permUsername = req.cookies.permanentSession;
@@ -33,7 +37,7 @@ exports.new = function (req, res) {
             User.findOne({username: username}, function (err, user) {
                 if(user) {
                     console.log(user);
-                    let picturePaths = savePictures(postData.pictures, user._id);
+                    let picturePaths = ControllerHelpers.savePictures(postData.pictures, user._id);
                     let myEvent = new MyEvent({
                         myEventName: postData.name,
                         description: postData.description,
@@ -68,25 +72,4 @@ exports.new = function (req, res) {
     } catch (e) {
         res.status(500).send("error " + e);
     }
-};
-
-let savePictures = function (pictures, userId) {
-    let targetDirectory = './private/images/' + userId + '/';
-    if (!fs.existsSync(targetDirectory)) {
-        fs.mkdirSync(targetDirectory,  {recursive: true}, err => {});
-    }
-    let currentTime = new Date().getTime();
-    console.log('saving pictures to ' + targetDirectory + currentTime);
-
-    let picturePaths = [];
-    pictures.forEach(function (picture, index) {
-        // strip off the data: url prefix to get just the base64-encoded bytes
-        let imageBlob = picture.replace(/^data:image\/\w+;base64,/, "");
-        let buf = new Buffer(imageBlob, 'base64');
-        let filePath = targetDirectory + currentTime + index + '.png';
-        fs.writeFile(filePath, buf, (err) => {console.log(err)});
-        picturePaths.push(filePath);
-        console.log('file saved!');
-    });
-    return picturePaths
 };

@@ -3,33 +3,76 @@ var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
 
 exports.updateUser = function(req,res){
-    let username = req.cookies.session;
-    let user = req.body;
+    let username;
+    if (req.cookies.permanentSession == undefined && req.cookies.session == undefined ){
+        res.render('index', {title: 'Express', username: "", login_is_correct: true});
+    }
+    if(req.cookies.session == undefined){
+        username = req.cookies.session;
+    } else{
+        username = req.cookies.permanentSession;
+    }
+
+     //guyguyg
     console.log(username);
-    console.log(user.new);
-    console.log(user.bio);
+    let user = req.body;
 
     if (user.new == ""){
+        User.updateOne({"username" : username}, {$set: {"username" : user.username, "bio": user.bio}}, function (err, result) {
+            if(result) {
+                console.log("New User" + result);
+                res.clearCookie("session");
+                res.clearCookie("permanentSession");
+                res.cookie("session", user.username, {maxAge: 3600000});
+                res.render('settings',{username: JSON.stringify(user.username), bio: JSON.stringify(user.bio),notMatch: false,passwordChanged: false});
+            }
+        });
+
         User.updateOne({"username" : username}, {$set: {"bio": user.bio}}, function (err, result) {
             if(result) {
                 console.log("New User" + result);
             }
         });
         console.log("UPDATED");
+
     }else{
-        let password = bcrypt.hashSync(user.new, salt);
+        User.findOne({username: username}, function (err, user) {
+            console.log(user);
+            if (!bcrypt.compareSync(req.body.currentPassword, user.password)) {
+                res.render('settings',{username: JSON.stringify(req.body.username), bio: JSON.stringify(req.body.bio),notMatch: true,passwordChanged: false});
+            } else {
+                let password = bcrypt.hashSync(req.body.new ,salt);
+                User.updateOne({"username" : username}, {$set: {"username" : req.body.username,"password": password, "bio": req.body.bio}}, function (err, result) {
+                    if(result) {
+                        console.log("New User" + result);
+                        res.clearCookie("session");
+                        res.clearCookie("permanentSession");
+                        res.cookie("session", req.body.username, {maxAge: 3600000});
+                        res.render('settings',{username: JSON.stringify(req.body.username), bio: JSON.stringify(req.body.bio),notMatch: false,passwordChanged: true});
+                    }
+                });
+            }
+        });
     }
 
 
 };
 
+
 exports.getUser = function (req,res) {
-    let username = req.cookies.session;
+    let username;
+    if (req.cookies.permanentSession == undefined && req.cookies.session == undefined ){
+        res.render('index', {title: 'Express', username: "", login_is_correct: true});
+    }
+    if(req.cookies.session == undefined){
+        username = req.cookies.session;
+    } else{
+        username = req.cookies.permanentSession;
+    }
    User.findOne({username: username}, function(err, result) {
         if (err) throw err;
-        console.log(result.username);
-        console.log(result.bio);
-         res.render('settings',{username: JSON.stringify(result.username), bio: JSON.stringify(result.bio)});
+        if(result)
+         res.render('settings',{username: JSON.stringify(result.username), bio: JSON.stringify(result.bio),notMatch: false,passwordChanged: false});
     });
 };
 

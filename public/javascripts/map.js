@@ -38,7 +38,17 @@ async function initialize() {
 
 function update_map() {
     search_param = $("#event-search-bar")[0].value;
-    console.log(search_param);
+    if (search_param != "") {
+        document.getElementById('search-alert').style.visibility = "visible";
+        document.getElementById('search-alert').style.height='70px';
+        document.getElementById('search-alert').style.padding='5px';
+        document.getElementById('search-term').innerText = search_param;
+        setTimeout(function() {
+            document.getElementById('search-alert').style.height='0px';
+            document.getElementById('search-alert').style.padding='0px';
+            document.getElementById('search-alert').innerText = "";
+        },5000);
+    }
     filtered_events = [];
 
     myEvents.forEach(function (myEvent) {
@@ -46,7 +56,6 @@ function update_map() {
         var month = search_param.split("/")[1]-1;
         var day = search_param.split("/")[2];
         var date_search = new Date(year,month,day);
-        console.log(date_search);
         var searchStart = myEvent.startDate;
         searchStart.setDate(searchStart.getDate()-1);
         var searchEnd = myEvent.endDate;
@@ -86,8 +95,8 @@ function update_map() {
 
 function eventInformationHtml(myEvent) {
     return "<p>Description: " + myEvent.description + "</p>" +
-        "<p>Address: " + myEvent.address + "</p>" +
-        "<p>Date: " + myEvent.startDate + " - " + myEvent.endDate + "</p>" +
+        "<p>Address: " + myEvent.location.address + "</p>" +
+        "<p>Date: " + new Date(myEvent.startDate).toLocaleString('gb') + " - " + new Date(myEvent.endDate).toLocaleString('gb') + "</p>" +
         "<p>Author: " + myEvent.author + "</p>" +
         "<p>Keywords: " + myEvent.keywords + "</p>";
 
@@ -116,7 +125,7 @@ function createStoryHtml(story) {
         "  <div class=\"card-body\">\n" +
         "    <blockquote class=\"blockquote mb-0\">\n" +
         "      <p>" + story.message + "</p>\n" +
-        "      <footer class=\"blockquote-footer\">" + story.author + "</footer>\n" +
+        "      <footer class=\"blockquote-footer\">" + story.author + " at " + new Date(story.createdAt).toLocaleString('gb') + "</footer>\n" +
         "    </blockquote>\n" +
         "  </div>\n" +
         "</div>"
@@ -124,15 +133,16 @@ function createStoryHtml(story) {
 
 function updateMyEventModal(myEvent) {
     let myEventModal = $('#myEventModal');
-    myEventModal.find('.modal-title').text(myEvent.name);
+    myEventModal.find('.modal-title').text(myEvent.myEventName);
     myEventModal.find('.modal-body').html(eventInformationHtml(myEvent));
-    $('#new-story-form').find('button').val(myEvent.id);
+    $('#new-story-form').find('button').val(myEvent._id);
     if (myEvent.pictures && myEvent.pictures.length > 0) {
         $('#myevent-profile-picture').html("<img class=\"img-fluid\" src=" + myEvent.pictures.pop() + " alt=\"event picture\">");
         let picturesAccordion = $('#myEventPicturesAccordion');
         if (myEvent.pictures.length > 0) {
             picturesAccordion.show();
             let picturesDiv = picturesAccordion.find('.list-group');
+            picturesDiv.html("");
             myEvent.pictures.forEach(pictureData => {
                 picturesDiv.append(createPictureHTML(pictureData));
             });
@@ -140,17 +150,27 @@ function updateMyEventModal(myEvent) {
             picturesAccordion.hide();
         }
     }
-    let stories = getCachedMyEventStories(myEvent.id);
-    stories.then(function (stories) {
-        let storyDiv = $('#story-div');
-        if (stories.length === 0) {
-            storyDiv.append("<p>Looks like there are no stories for this event yet</p>");
-        } else {
-            stories.forEach(story => {
-                storyDiv.append(createStoryHtml(story));
-            })
+
+    $.get('/story/' + myEvent._id, function (stories) {
+        if(stories) {
+            addStoriesToResults(stories);
         }
-    })
+    }).fail( function (err) {
+        let cacheStories = getCachedMyEventStories(myEvent._id);
+        cacheStories.then(function (stories) {
+            addStoriesToResults(stories)
+        })
+    });
+}
+function addStoriesToResults(stories) {
+    let storyDiv = $('#story-div');
+    if (stories.length === 0) {
+        storyDiv.append("<p>Looks like there are no stories for this event yet</p>");
+    } else {
+        stories.forEach(story => {
+            storyDiv.append(createStoryHtml(story));
+        })
+    }
 }
 
 function expandEvent(btn) {
@@ -160,7 +180,9 @@ function expandEvent(btn) {
         url: "/myevent/" + myEventId,
         dataType: 'json',
         success: function (data) {
-            console.log("Success!");
+            let myEvent = data;
+            console.log(myEvent);
+            updateMyEventModal(myEvent);
         },
         error: function (e) {
             console.log("Failed");
@@ -185,11 +207,11 @@ function myEventCardHtml(myEvent) {
         "    </div>\n" +
         "    <div class=\"col-md-8\">\n" +
         "      <div class=\"card-body\">\n" +
-        "        <h5 class=\"card-title\">" + myEvent.name + "</h5>\n" +
+        "        <h5 class=\"card-title\">" + myEvent.myEventName + "</h5>\n" +
         "        <p class=\"card-text\">" + myEvent.description + "</p>\n" +
-        "        <p class=\"card-text\">Date: " + myEvent.startDate + " - " + myEvent.endDate + "</p>\n" +
+        "        <p class=\"card-text\">Date: " + new Date(myEvent.startDate).toLocaleString('gb') + " - " + new Date(myEvent.endDate).toLocaleString('gb') + "</p>\n" +
         "        <button onclick=\"expandEvent(this)\" type=\"button\" class=\"btn btn-dark\" " +
-        "                data-myeventid=\"" + myEvent.id + "\" data-toggle=\"modal\" data-target=\"#myEventModal\">Expand</button>" +
+        "                data-myeventid=\"" + myEvent._id + "\" data-toggle=\"modal\" data-target=\"#myEventModal\">Expand</button>" +
         "      </div>\n" +
         "    </div>\n" +
         "  </div>\n" +
@@ -223,6 +245,7 @@ function addMyEventToMap(myEvent) {
         position: {lat: parseFloat(myEvent.location.lat), lng: parseFloat(myEvent.location.lng)},
         map: map
     });
+    console.log( {lat: parseFloat(myEvent.location.lat), lng: parseFloat(myEvent.location.lng)});
 
     let infoWindow = new google.maps.InfoWindow({
         content: myEventCardHtml(myEvent),
@@ -232,7 +255,6 @@ function addMyEventToMap(myEvent) {
     marker.addListener('click', function () {
         infoWindow.open(marker.get('map'), marker);
     });
-
 }
 
 function updateCache(myEvents) {
