@@ -3,7 +3,17 @@ var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
 
 exports.updateUser = function(req,res){
-    let username = req.cookies.session; //guyguyg
+    let username;
+    if (req.cookies.permanentSession == undefined && req.cookies.session == undefined ){
+        res.render('index', {title: 'Express', username: "", login_is_correct: true});
+    }
+    if(req.cookies.session == undefined){
+        username = req.cookies.session;
+    } else{
+        username = req.cookies.permanentSession;
+    }
+
+     //guyguyg
     console.log(username);
     let user = req.body;
 
@@ -50,7 +60,15 @@ exports.updateUser = function(req,res){
 
 
 exports.getUser = function (req,res) {
-    let username = req.cookies.session;
+    let username;
+    if (req.cookies.permanentSession == undefined && req.cookies.session == undefined ){
+        res.render('index', {title: 'Express', username: "", login_is_correct: true});
+    }
+    if(req.cookies.session == undefined){
+        username = req.cookies.session;
+    } else{
+        username = req.cookies.permanentSession;
+    }
    User.findOne({username: username}, function(err, result) {
         if (err) throw err;
          res.render('settings',{username: JSON.stringify(result.username), bio: JSON.stringify(result.bio),notMatch: false,passwordChanged: false});
