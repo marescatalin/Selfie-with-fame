@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var User = require('../models/user');
+var fs = require('fs');
 
 var login = false;
 
@@ -87,5 +89,29 @@ router.get('/getuser', (req, res)=>{
 //shows all the cookies
     console.log(JSON.stringify(req.cookies));
 });
+
+router.get('/private/images/:userId/:pictureId', function (req, res) {
+    if(req.cookies.session || req.cookies.permanentSession) {
+        let username = req.cookies.session ? req.cookies.session : req.cookies.permanentSession;
+        User.findOne({username: username}, function (err, user) {
+            let imgPath = "./private/images/" + req.params.userId + "/" + req.params.pictureId;
+            if(fs.existsSync(imgPath)) {
+                fs.readFile(imgPath, function read(err, data) {
+                    if(err) {
+                        throw err;
+                    }
+                    let img = base64_encode(data);
+                    res.send(JSON.stringify(img));
+                })
+            }
+        })
+    }
+});
+
+function base64_encode(bitmap) {
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
+
 
 module.exports = router;

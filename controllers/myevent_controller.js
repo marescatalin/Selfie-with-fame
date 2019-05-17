@@ -2,6 +2,22 @@ let MyEvent = require('../models/myevent');
 let User = require('../models/user');
 var fs = require('fs');
 
+// Get all myEvents
+exports.all = function (res) {
+  let myEvents = MyEvent.find({}, function (err, results) {
+      if(results) {
+          results.forEach(result => {
+              let pictureURIs = []
+              result.pictures.forEach(picture => {
+                  let pictureURI = fs.open
+              })
+          })
+          res.setHeader('Content-Type', 'application/json');
+          res.send(JSON.stringify(results));
+      }
+  });
+};
+
 // Post new story
 exports.new = function (req, res) {
     let postData = req.body;
@@ -32,7 +48,7 @@ exports.new = function (req, res) {
                         address: postData.address,
                         postCode: postData.postCode,
                         pictures: picturePaths,
-                        author: user._id
+                        author: username
                     });
                     console.log("Received " + myEvent);
 

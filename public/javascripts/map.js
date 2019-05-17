@@ -4,16 +4,16 @@ function getCookie(name) {
     if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
-function initialize() {
-        document.getElementById("user").innerHTML =
-             getCookie("session");
+async function initialize() {
+    document.getElementById("user").innerHTML =
+         getCookie("session");
 
     geocoder = new google.maps.Geocoder();
 
-    getLocation()
+    await getLocation()
         .then(function (loc) {
             if (loc) {
-                displayMap(loc, myEvents);
+                map = displayMap(loc, myEvents);
             } else {
                 console.log("Geolocation is not supported by this browser.");
             }
@@ -87,7 +87,7 @@ function update_map() {
 function eventInformationHtml(myEvent) {
     return "<p>Description: " + myEvent.description + "</p>" +
         "<p>Address: " + myEvent.address + "</p>" +
-        "<p>Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") + "</p>" +
+        "<p>Date: " + myEvent.startDate + " - " + myEvent.endDate + "</p>" +
         "<p>Author: " + myEvent.author + "</p>" +
         "<p>Keywords: " + myEvent.keywords + "</p>";
 
@@ -187,7 +187,7 @@ function myEventCardHtml(myEvent) {
         "      <div class=\"card-body\">\n" +
         "        <h5 class=\"card-title\">" + myEvent.name + "</h5>\n" +
         "        <p class=\"card-text\">" + myEvent.description + "</p>\n" +
-        "        <p class=\"card-text\">Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") + "</p>\n" +
+        "        <p class=\"card-text\">Date: " + myEvent.startDate + " - " + myEvent.endDate + "</p>\n" +
         "        <button onclick=\"expandEvent(this)\" type=\"button\" class=\"btn btn-dark\" " +
         "                data-myeventid=\"" + myEvent.id + "\" data-toggle=\"modal\" data-target=\"#myEventModal\">Expand</button>" +
         "      </div>\n" +
@@ -210,34 +210,39 @@ function displayMap(loc, curr_events) {
         zoom: 15,
         center: {lat: myLat, lng: myLng}
     };
-    let map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);// To add the marker to the map, use the 'map' property
+    return new google.maps.Map(document.getElementById("map-canvas"), mapOptions);// To add the marker to the map, use the 'map' property
 
-    curr_events.forEach(function (myEvent) {
-        let marker = new google.maps.Marker({
-            title: myEvent.name,
-            position: {lat: myEvent.location.lat, lng: myEvent.location.lng},
-            map: map
-        });
-
-        let infoWindow = new google.maps.InfoWindow({
-            content: myEventCardHtml(myEvent),
-            maxWidth: 400
-        });
-
-        marker.addListener('click', function () {
-            infoWindow.open(marker.get('map'), marker);
-        });
-    });
+    // curr_events.forEach(function (myEvent) {
+    //     addMyEventToMap(myEvent);
+    // });
 }
 
-// function ajaxGet(url) {
-//     $.get(url, function (data) {
-//         return data;
-//     });
-// }
+function addMyEventToMap(myEvent) {
+    let marker = new google.maps.Marker({
+        title: myEvent.myEventName,
+        position: {lat: parseFloat(myEvent.location.lat), lng: parseFloat(myEvent.location.lng)},
+        map: map
+    });
 
+    let infoWindow = new google.maps.InfoWindow({
+        content: myEventCardHtml(myEvent),
+        maxWidth: 400
+    });
 
-$(document).ready(function () {
+    marker.addListener('click', function () {
+        infoWindow.open(marker.get('map'), marker);
+    });
+
+}
+
+function updateCache(myEvents) {
+
+}
+
+var myEvents = [];
+var map;
+
+$(document).ready(async function () {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
             .register('./service-worker.js')
@@ -255,18 +260,28 @@ $(document).ready(function () {
         console.log('This browser doesn\'t support IndexedDB');
     }
 
+    await initialize();
+    console.log("map init to " + map);
+
     $("#event-search-button").click(update_map);
 
-    myUsers = JSON.parse(document.getElementById("myUsers").innerText);
-    myEvents = [];
-    myStories = JSON.parse(document.getElementById("myStories").innerText);
+    var myUsers = JSON.parse(document.getElementById("myUsers").innerText);
+    var myStories = JSON.parse(document.getElementById("myStories").innerText);
 
-    let myCachedEvents = getCachedMyEvents();
-    myCachedEvents.then(function (myEventList) {
-        myEvents = myEvents.concat(myEventList);
-        console.log("Retrieved events", myEvents);
-        initialize();
-    })
+
+    $.get("/myevent/all", async function (data) {
+        if(data) {
+            console.log(data);
+            myEvents.push(data);
+            await clearCache(MYEVENT_STORE_NAME);
+            data.forEach(myEvent => {
+                cacheNewMyEvent(myEvent);
+                addMyEventToMap(myEvent);
+            })
+        }
+    }).fail(function () {
+        myEvents = getCachedMyEvents();
+    });
 
     $('#myEventModal').on('hidden.bs.modal', function () {
         $('#story-div').html("");
@@ -276,6 +291,4 @@ $(document).ready(function () {
         $(location).attr('href', '/myevent/new');
     });
 });
-
-google.maps.event.addDomListener(window, 'load', initialize);
 

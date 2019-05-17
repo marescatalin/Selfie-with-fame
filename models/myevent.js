@@ -18,7 +18,7 @@ var MyEvent = new Schema(
         endDate: {type:Date},
         pictures: {type:Array},
         keywords: {type:Array},
-        author: {type:Schema.ObjectId}
+        author: {type:String}
     }
 );
 
