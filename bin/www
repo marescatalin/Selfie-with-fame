@@ -8,7 +8,7 @@ var app = require('../app');
 var debug = require('debug')('intelligent-web:server');
 var https = require('https');
 var fs = require('fs-extra');
-var database= require('../databases/users');
+var database= require('../databases/selfie_with_fame_db');
 
 
 /**
@@ -96,3 +96,8 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+var io = require('socket.io').listen(server);
+var socket_module = require('../socket.io/socket-io');
+socket_module.init(io,app);
+

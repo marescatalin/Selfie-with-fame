@@ -38,7 +38,17 @@ function initialize() {
 
 function update_map() {
     search_param = $("#event-search-bar")[0].value;
-    console.log(search_param);
+    if (search_param != "") {
+        document.getElementById('search-alert').style.visibility = "visible";
+        document.getElementById('search-alert').style.height='70px';
+        document.getElementById('search-alert').style.padding='5px';
+        document.getElementById('search-term').innerText = search_param;
+        setTimeout(function() {
+            document.getElementById('search-alert').style.height='0px';
+            document.getElementById('search-alert').style.padding='0px';
+            document.getElementById('search-alert').innerText = "";
+        },5000);
+    }
     filtered_events = [];
 
     myEvents.forEach(function (myEvent) {
@@ -46,7 +56,6 @@ function update_map() {
         var month = search_param.split("/")[1]-1;
         var day = search_param.split("/")[2];
         var date_search = new Date(year,month,day);
-        console.log(date_search);
         var searchStart = myEvent.startDate;
         searchStart.setDate(searchStart.getDate()-1);
         var searchEnd = myEvent.endDate;
@@ -230,6 +239,12 @@ function displayMap(loc, curr_events) {
     });
 }
 
+// function ajaxGet(url) {
+//     $.get(url, function (data) {
+//         return data;
+//     });
+// }
+
 
 $(document).ready(function () {
     if ('serviceWorker' in navigator) {
@@ -251,9 +266,7 @@ $(document).ready(function () {
 
     $("#event-search-button").click(update_map);
 
-    myUsers = JSON.parse(document.getElementById("myUsers").innerText);
     myEvents = [];
-    myStories = JSON.parse(document.getElementById("myStories").innerText);
 
     let myCachedEvents = getCachedMyEvents();
     myCachedEvents.then(function (myEventList) {

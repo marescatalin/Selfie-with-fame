@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var Users = require('../models/user');
 
 var login = false;
 
@@ -89,4 +88,7 @@ router.get('/getuser', (req, res)=>{
     console.log(JSON.stringify(req.cookies));
 });
 
+router.get('/test', function (req,res){
+    res.render('test');
+});
 module.exports = router;

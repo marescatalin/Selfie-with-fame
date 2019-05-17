@@ -8,6 +8,7 @@ exports.updateUser = function(req,res){
     let user = req.body;
 
     if (user.new == ""){
+<<<<<<< HEAD
         User.updateOne({"username" : username}, {$set: {"username" : user.username, "bio": user.bio}}, function (err, result) {
             if(result) {
                 console.log("New User" + result);
@@ -18,6 +19,13 @@ exports.updateUser = function(req,res){
             }
         });
 
+=======
+        User.updateOne({"username" : username}, {$set: {"bio": user.bio}}, function (err, result) {
+            if(result) {
+                console.log("New User" + result);
+            }
+        });
+>>>>>>> db59f57731024f6491ceadef0a1a0bd0deff0c39
         console.log("UPDATED");
 
     }else{
