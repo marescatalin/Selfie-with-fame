@@ -41,40 +41,38 @@ async function initialize() {
 }
 
 function update_map() {
-    search_param = $("#event-search-bar")[0].value;
+    let search_param = $("#event-search-bar")[0].value;
     if (search_param != "") {
         document.getElementById('search-alert').style.visibility = "visible";
         document.getElementById('search-alert').style.height='70px';
         document.getElementById('search-alert').style.padding='5px';
-        document.getElementById('search-term').innerText = search_param;
-        setTimeout(function() {
-            document.getElementById('search-alert').style.height='0px';
-            document.getElementById('search-alert').style.padding='0px';
-            document.getElementById('search-alert').innerText = "";
-        },5000);
+        document.getElementById('search-term').innerHTML = search_param;
     }
-    filtered_events = [];
-
-    myEvents.forEach(function (myEvent) {
-        var year = search_param.split("/")[0];
-        var month = search_param.split("/")[1]-1;
-        var day = search_param.split("/")[2];
-        var date_search = new Date(year,month,day);
-        var searchStart = myEvent.startDate;
-        searchStart.setDate(searchStart.getDate()-1);
-        var searchEnd = myEvent.endDate;
-        searchEnd.setDate(searchEnd.getDate()+1);
-        if (myEvent.name == search_param || myEvent.description.includes(search_param) || myEvent.address.includes(search_param) ||
-            myEvent.postcode.includes(search_param) ||
-            (searchStart < date_search && searchEnd > date_search)) {
-            filtered_events.push(myEvent);
-        }
-    });
+    let filtered_events = [];
+    if(myEvents) {
+        myEvents[0].forEach(function (myEvent) {
+            var year = search_param.split("/")[0];
+            var month = search_param.split("/")[1] - 1;
+            var day = search_param.split("/")[2];
+            var date_search = new Date(year, month, day);
+            var searchStart = new Date(myEvent.startDate);
+            searchStart.setDate(searchStart.getDate() - 1);
+            var searchEnd = new Date(myEvent.endDate);
+            searchEnd.setDate(searchEnd.getDate() + 1);
+            if (myEvent.myEventName.includes(search_param) || myEvent.description.includes(search_param) || myEvent.location.address.includes(search_param) ||
+                myEvent.location.postcode.includes(search_param) ||
+                (searchStart < date_search && searchEnd > date_search)) {
+                filtered_events.push(myEvent);
+            }
+        });
+    }
 
     getLocation()
         .then(function (loc) {
             if (loc) {
-                displayMap(loc, filtered_events);
+                markers.forEach(marker => marker.setMap(null));
+                markers = [];
+                filtered_events.forEach(filtered_event => addMyEventToMap(filtered_event))
             } else {
                 console.log("Geolocation is not supported by this browser.");
             }
@@ -231,7 +229,7 @@ function getLocation() {
     })
 }
 
-function displayMap(loc, curr_events) {
+function displayMap(loc) {
     let myLat = loc.coords.latitude;
     let myLng = loc.coords.longitude;
 
@@ -240,11 +238,8 @@ function displayMap(loc, curr_events) {
         center: {lat: myLat, lng: myLng}
     };
     return new google.maps.Map(document.getElementById("map-canvas"), mapOptions);// To add the marker to the map, use the 'map' property
-
-    // curr_events.forEach(function (myEvent) {
-    //     addMyEventToMap(myEvent);
-    // });
 }
+
 
 function addMyEventToMap(myEvent) {
     let marker = new google.maps.Marker({
@@ -262,6 +257,7 @@ function addMyEventToMap(myEvent) {
     marker.addListener('click', function () {
         infoWindow.open(marker.get('map'), marker);
     });
+    markers.push(marker);
 }
 
 function updateCache(myEvents) {
@@ -270,6 +266,7 @@ function updateCache(myEvents) {
 
 var myEvents = [];
 var map;
+var markers = [];
 
 $(document).ready(async function () {
     if ('serviceWorker' in navigator) {
