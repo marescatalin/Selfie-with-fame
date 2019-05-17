@@ -98,7 +98,9 @@ function eventInformationHtml(myEvent) {
         "<p>Address: " + myEvent.address + "</p>" +
         "<p>Date: " + myEvent.startDate.toLocaleDateString("gb-GB") + " - " + myEvent.endDate.toLocaleDateString("gb-GB") + "</p>" +
         "<p>Author: " + myEvent.author + "</p>" +
-        "<p>Keywords: " + myEvent.keywords + "</p>";
+        "<p>Keywords: " + myEvent.keywords + "</p>" +
+        "<button onClick=\"window.location='/test'\" type=\"button\" class=\"btn btn-dark\">Chat</button>";
+
 
 }
 

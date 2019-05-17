@@ -19,5 +19,7 @@ socket.on('updatechat', function (who,text){
 });
 
 document.addEventListener('DOMContentLoaded', function(event) {
-    socket.emit('joining',"1234","123");
+    var user = Math.random();
+    socket.emit('joining',user,"event");
+    socket.emit('create', 'event');
 });
