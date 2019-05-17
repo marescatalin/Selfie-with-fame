@@ -32,7 +32,7 @@ router.get('/', function(req, res, next) {
     if (req.cookies.permanentSession == undefined && req.cookies.session == undefined ){
         res.render('index', {title: 'Express', username: "", login_is_correct: true});
     }else{
-        res.render('map', {myStories: myStories, myEvents: myEvents, myUsers: myUsers});
+        res.redirect('map')
     }
 
 });
